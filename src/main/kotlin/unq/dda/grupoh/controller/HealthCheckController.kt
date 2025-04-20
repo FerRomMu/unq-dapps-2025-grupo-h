@@ -8,4 +8,7 @@ class HealthCheckController {
 
     @GetMapping("/ping")
     fun ping() = "pong"
+
+    @GetMapping("/ping-logged")
+    fun pingLogged() = "pong logueado"
 }
