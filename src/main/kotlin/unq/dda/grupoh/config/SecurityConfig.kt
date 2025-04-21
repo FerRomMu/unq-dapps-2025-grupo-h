@@ -22,7 +22,7 @@ class SecurityConfig(
                     "/v3/api-docs/**",
                     "/swagger-ui.html",
                     "/ping",
-                    "/register",
+                    "/auth/register",
                     "/auth/login"
                 ).permitAll()
                     .anyRequest().authenticated()
