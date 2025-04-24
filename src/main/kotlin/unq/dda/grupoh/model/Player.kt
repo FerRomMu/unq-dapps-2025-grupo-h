@@ -1,11 +1,12 @@
 package unq.dda.grupoh.model
 
-class Player(
+data class Player(
+    val id: Int,
     val name: String,
-    val age: Int,
-    val team: String,
+    val position: String,
+    val dateOfBirth: String,
     val nationality: String,
-    val height: Double,
-    val positions: List<String>
+    val shirtNumber: Int,
+    val marketValue: Int
 ){
 }
