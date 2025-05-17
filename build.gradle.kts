@@ -49,11 +49,6 @@ dependencies {
 	implementation("io.jsonwebtoken:jjwt-jackson:0.12.6")
 	implementation("org.jsoup:jsoup:1.17.2")
 
-	implementation("io.ktor:ktor-client-core:2.3.0")  // Versión de Ktor
-	implementation("io.ktor:ktor-client-cio:2.3.0")   // Motor CIO para el cliente
-	implementation("io.ktor:ktor-client-content-negotiation:2.3.0")  // Para Content Negotiation
-	implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.0")  // Para JSON con Kotlinx Serialization
-	implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.0")  // Kotlinx Serialization
 }
 kotlin {
 	compilerOptions {
