@@ -51,7 +51,7 @@ dependencies {
 	implementation("org.seleniumhq.selenium:selenium-java:4.31.0")
 	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
 	implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.2")
-
+	implementation("org.hsqldb:hsqldb:2.7.2")
 }
 kotlin {
 	compilerOptions {

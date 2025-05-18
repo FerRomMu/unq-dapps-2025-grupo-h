@@ -9,7 +9,7 @@ HELP.md
 gradle-app.setting
 gradle-app.iml
 src/main/resources/application.properties
-
+src/main/resources/application-postgres.properties
 ### STS ###
 .apt_generated
 .classpath
