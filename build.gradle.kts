@@ -48,6 +48,9 @@ dependencies {
 	implementation("io.jsonwebtoken:jjwt-impl:0.12.6")
 	implementation("io.jsonwebtoken:jjwt-jackson:0.12.6")
 	implementation("org.jsoup:jsoup:1.17.2")
+	implementation("org.seleniumhq.selenium:selenium-java:4.31.0")
+	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
+	implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.2")
 
 }
 kotlin {

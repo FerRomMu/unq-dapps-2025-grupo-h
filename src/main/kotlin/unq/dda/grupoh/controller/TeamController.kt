@@ -4,7 +4,6 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
-import unq.dda.grupoh.model.Player
 import unq.dda.grupoh.service.TeamService
 
 @RestController
@@ -14,8 +13,8 @@ class TeamsController(
 ) {
 
     @GetMapping("/players")
-    fun getPlayersByTeam(@RequestParam("name") teamName: String): List<Player> {
-        val players: List<Player> = teamService.getPlayersByTeamName(teamName)
-        return players
-    }
+    fun getPlayersByTeam(
+        @RequestParam("name") teamName: String
+    ): List<String> = teamService.getPlayersByTeamName(teamName)
+
 }
