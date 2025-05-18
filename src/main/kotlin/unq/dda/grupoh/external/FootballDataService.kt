@@ -55,10 +55,6 @@ class FootballDataService(
 
             teamToFind = currentTeams.find { it.name.equals(teamName, ignoreCase = true) }
 
-            if (teamToFind != null) {
-                break
-            }
-
             if (apiResponse.count < limit) {
                 offset = 0
                 break
