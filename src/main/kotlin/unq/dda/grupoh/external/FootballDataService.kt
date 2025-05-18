@@ -13,10 +13,12 @@ import unq.dda.grupoh.exceptions.ExternalErrorException
 import java.net.URI
 import java.net.http.HttpRequest
 import java.net.http.HttpResponse
+import kotlin.coroutines.CoroutineContext
 
 @Service
 class FootballDataService(
-    @Value("\${football-data-api.token}") private val apiToken: String
+    @Value("\${football-data-api.token}") private val apiToken: String,
+    private val dispatcher: CoroutineContext = Dispatchers.IO
 ) {
 
     private val baseUrl: String = "https://api.football-data.org/v4/"
@@ -38,7 +40,7 @@ class FootballDataService(
                 .header("X-Auth-Token", apiToken)
                 .build()
 
-            val response = withContext(Dispatchers.IO) {
+            val response = withContext(dispatcher) {
                 client.send(request, HttpResponse.BodyHandlers.ofString())
             }
 
@@ -75,7 +77,7 @@ class FootballDataService(
             .header("X-Auth-Token", apiToken)
             .build()
 
-        val response = withContext(Dispatchers.IO) {
+        val response = withContext(dispatcher) {
             client.send(request, HttpResponse.BodyHandlers.ofString())
         }
 
