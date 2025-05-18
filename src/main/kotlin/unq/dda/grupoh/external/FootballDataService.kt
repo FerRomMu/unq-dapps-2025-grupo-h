@@ -1,12 +1,12 @@
-package unq.dda.grupoh.repository
+package unq.dda.grupoh.external
 
-import org.springframework.stereotype.Repository
 import unq.dda.grupoh.model.Team
 import java.net.http.HttpClient
 import kotlinx.serialization.json.Json
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.stereotype.Service
 import unq.dda.grupoh.dto.footballData.TeamDetailResponse
 import unq.dda.grupoh.dto.footballData.TeamResponse
 import unq.dda.grupoh.exceptions.ExternalErrorException
@@ -14,8 +14,8 @@ import java.net.URI
 import java.net.http.HttpRequest
 import java.net.http.HttpResponse
 
-@Repository
-class FootballDataRepository(
+@Service
+class FootballDataService(
     @Value("\${football-data-api.token}") private val apiToken: String
 ) {
 

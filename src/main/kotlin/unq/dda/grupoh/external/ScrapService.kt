@@ -1,19 +1,7 @@
-package unq.dda.grupoh.repository
-
-import org.openqa.selenium.By
-import org.openqa.selenium.PageLoadStrategy
-import org.openqa.selenium.WebDriver
-import org.openqa.selenium.chrome.ChromeDriver
-import org.openqa.selenium.chrome.ChromeOptions
-import org.openqa.selenium.support.ui.ExpectedConditions
-import org.openqa.selenium.support.ui.WebDriverWait
-import org.springframework.stereotype.Repository
-import unq.dda.grupoh.exceptions.ResourceNotFoundException
-import unq.dda.grupoh.model.Team
-import java.time.Duration
+package unq.dda.grupoh.external
 
 
-class ScrapRepository {
+class ScrapService {
     /*private fun createDriver(): WebDriver {
         val options = ChromeOptions()
         options.addArguments(
