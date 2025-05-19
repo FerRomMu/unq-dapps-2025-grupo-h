@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service
 import unq.dda.grupoh.exceptions.ResourceNotFoundException
 import unq.dda.grupoh.model.Team
 import unq.dda.grupoh.external.FootballDataService
+import unq.dda.grupoh.model.Match
 import unq.dda.grupoh.repository.TeamRepository
 
 @Service
@@ -27,5 +28,9 @@ class TeamService(
         }
 
         return team.players
+    }
+
+    fun getMatchesByTeamName(teamName: String): List<Match> {
+        TODO("Not yet implemented")
     }
 }
