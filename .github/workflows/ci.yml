@@ -23,5 +23,11 @@ jobs:
       - name: Dar permisos de ejecución a Gradle
         run: chmod +x ./gradlew
 
-      - name: Construir con Gradle
-        run: ./gradlew build -x test
+      - name: Ejecutar tests y generar cobertura
+        run: ./gradlew test jacocoTestReport
+
+      - name: Subir reporte de cobertura como artefacto
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage-report
+          path: build/reports/jacoco/test/html
