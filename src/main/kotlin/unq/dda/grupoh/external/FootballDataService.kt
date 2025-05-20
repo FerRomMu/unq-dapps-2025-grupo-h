@@ -3,22 +3,21 @@ package unq.dda.grupoh.external
 import unq.dda.grupoh.model.Team
 import java.net.http.HttpClient
 import kotlinx.serialization.json.Json
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
+import unq.dda.grupoh.dto.footballData.MatchesResponse
 import unq.dda.grupoh.dto.footballData.TeamDetailResponse
 import unq.dda.grupoh.dto.footballData.TeamResponse
 import unq.dda.grupoh.exceptions.ExternalErrorException
+import unq.dda.grupoh.model.Match
 import java.net.URI
 import java.net.http.HttpRequest
 import java.net.http.HttpResponse
-import kotlin.coroutines.CoroutineContext
+import java.time.Duration
 
 @Service
 class FootballDataService(
     @Value("\${football-data-api.token}") private val apiToken: String,
-    private val dispatcher: CoroutineContext = Dispatchers.IO
 ) {
 
     private val baseUrl: String = "https://api.football-data.org/v4/"
@@ -26,7 +25,16 @@ class FootballDataService(
     private val client: HttpClient = HttpClient.newBuilder().build()
     private val json = Json { ignoreUnknownKeys = true }
 
-    private suspend fun fetchTeam(teamName: String): List<Team> {
+    private fun fetch(url: String) = client.send(
+        HttpRequest.newBuilder()
+            .uri(URI.create(url))
+            .timeout(Duration.ofSeconds(10))
+            .header("X-Auth-Token", apiToken)
+            .build(),
+        HttpResponse.BodyHandlers.ofString()
+    )
+
+    private fun fetchTeam(teamName: String): List<Team> {
         val fullUrl = baseUrl + "teams"
         val limit = 500
 
@@ -34,15 +42,7 @@ class FootballDataService(
         var teamToFind: Team? = null
 
         while (teamToFind == null) {
-            val uri = URI.create("$fullUrl?limit=$limit&offset=$offset")
-            val request = HttpRequest.newBuilder()
-                .uri(uri)
-                .header("X-Auth-Token", apiToken)
-                .build()
-
-            val response = withContext(dispatcher) {
-                client.send(request, HttpResponse.BodyHandlers.ofString())
-            }
+            val response = fetch("$fullUrl?limit=$limit&offset=$offset")
 
             if (response.statusCode() != 200) {
                 print("Error at API call: ${response.statusCode()} - ${response.body()}")
@@ -68,18 +68,8 @@ class FootballDataService(
         return allTeams
     }
 
-    private suspend fun fetchPlayers(teamId: Int): List<String> {
-        val url = "$baseUrl/teams/$teamId"
-        val uri = URI.create(url)
-
-        val request = HttpRequest.newBuilder()
-            .uri(uri)
-            .header("X-Auth-Token", apiToken)
-            .build()
-
-        val response = withContext(dispatcher) {
-            client.send(request, HttpResponse.BodyHandlers.ofString())
-        }
+    private fun fetchPlayers(teamId: Int): List<String> {
+        val response = fetch("$baseUrl/teams/$teamId")
 
         if (response.statusCode() != 200) {
             throw ExternalErrorException("Error fetching players for team $teamId: ${response.statusCode()} - ${response.body()}")
@@ -89,7 +79,31 @@ class FootballDataService(
         return teamDetailResponse.squad?.map { it.name } ?: emptyList()
     }
 
-    suspend fun findByName(teamName: String): Pair<Team?, List<Team>> {
+    fun fetchMatches(teamName: String, teamId: Int): List<Match> {
+        val response = fetch("$baseUrl/teams/$teamId/matches")
+
+        if (response.statusCode() != 200) {
+            throw ExternalErrorException("Error fetching matches for team $teamId: ${response.statusCode()} - ${response.body()}")
+        }
+
+        val matchesResponse = json.decodeFromString<MatchesResponse>(response.body())
+
+        return matchesResponse.matches.map {
+            Match(
+                id = it.id,
+                date = it.utcDate,
+                status = it.status,
+                stage = it.stage,
+                homeTeam = it.homeTeam.name,
+                awayTeam = it.awayTeam.name,
+                scoreHome = it.score.fullTime.home,
+                scoreAway = it.score.fullTime.away,
+                winner = it.score.winner
+            )
+        }
+    }
+
+    fun findTeamByName(teamName: String): Pair<Team?, List<Team>> {
         val allTeams = fetchTeam(teamName)
         var team = allTeams.find { it.name.equals(teamName, ignoreCase = true) }
         if(team != null) {
@@ -99,10 +113,14 @@ class FootballDataService(
         return Pair(team, allTeams)
     }
 
-    suspend fun findById(apiId: Int, name: String): Team = Team(
-        null,
-        name,
-        apiId,
-        fetchPlayers(apiId)
-    )
+    fun findTeamById(apiId: Int, name: String): Team =
+        Team(
+            null,
+            name,
+            apiId,
+            fetchPlayers(apiId)
+        )
+
+    fun findMatchesByTeam(team: Team): List<Match> =
+        fetchMatches(team.name, team.apiId)
 }

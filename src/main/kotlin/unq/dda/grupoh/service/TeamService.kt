@@ -7,6 +7,7 @@ import unq.dda.grupoh.model.Team
 import unq.dda.grupoh.external.FootballDataService
 import unq.dda.grupoh.model.Match
 import unq.dda.grupoh.repository.TeamRepository
+import org.springframework.transaction.annotation.Transactional
 
 @Service
 class TeamService(
@@ -14,23 +15,35 @@ class TeamService(
     private val footballDataService: FootballDataService
 ) {
 
-    fun getPlayersByTeamName(teamName: String): List<String> {
+    @Transactional
+    fun saveOrUpdateByName(team: Team): Team {
+        val updated = teamRepository.updateByName(team)
+        return if (updated == 0) teamRepository.save(team)
+        else teamRepository.findByName(team.name)!!
+    }
 
-        var team: Team = teamRepository.findByName(teamName) ?: run {
-            val teams: Pair<Team?, List<Team>> = runBlocking { footballDataService.findByName(teamName) }
-            teamRepository.saveAll(teams.second)
-            teams.first ?: throw ResourceNotFoundException("Team not found.")
-        }.also { teamRepository.save(it) }
+    fun getTeam(teamName: String): Team {
+        return teamRepository.findByName(teamName)
+            ?: run {
+                val (mainTeam, allTeams) = runBlocking { footballDataService.findTeamByName(teamName) }
+                allTeams.forEach { saveOrUpdateByName(it) }
+                mainTeam ?: throw ResourceNotFoundException("Team not found.")
+            }
+    }
+
+    fun getPlayersByTeamName(teamName: String): List<String> {
+        var team = getTeam(teamName)
 
         if (team.players.isEmpty()) {
-            team = runBlocking { footballDataService.findById(team.apiId, team.name) }
-            teamRepository.save(team)
+            team = runBlocking { footballDataService.findTeamById(team.apiId, team.name) }
+            saveOrUpdateByName(team)
         }
 
         return team.players
     }
 
     fun getMatchesByTeamName(teamName: String): List<Match> {
-        TODO("Not yet implemented")
+        val team = getTeam(teamName)
+        return footballDataService.findMatchesByTeam(team)
     }
 }
