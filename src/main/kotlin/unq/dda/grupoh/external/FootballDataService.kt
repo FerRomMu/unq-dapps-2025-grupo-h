@@ -18,11 +18,11 @@ import java.time.Duration
 @Service
 class FootballDataService(
     @Value("\${football-data-api.token}") private val apiToken: String,
+    private val client: HttpClient = HttpClient.newBuilder().build()
 ) {
 
     private val baseUrl: String = "https://api.football-data.org/v4/"
     private var offset: Int = 0
-    private val client: HttpClient = HttpClient.newBuilder().build()
     private val json = Json { ignoreUnknownKeys = true }
 
     private fun fetch(url: String) = client.send(
