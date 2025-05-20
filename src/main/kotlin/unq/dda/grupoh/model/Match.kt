@@ -10,4 +10,6 @@ data class Match(
     val scoreHome: Int?,
     val scoreAway: Int?,
     val winner: String?
-)
+) {
+    fun isNotPlayedYet(): Boolean = status == "SCHEDULED"
+}

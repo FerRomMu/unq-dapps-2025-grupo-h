@@ -23,4 +23,9 @@ class TeamController(
         @RequestParam("name") teamName: String
     ): List<Match> = teamService.getMatchesByTeamName(teamName)
 
+    @GetMapping("/next-matches")
+    fun getNextMatchesByTeam(
+        @RequestParam("name") teamName: String
+    ): List<Match> = teamService.getNextMatchesByTeamName(teamName)
+
 }

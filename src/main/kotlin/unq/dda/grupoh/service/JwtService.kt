@@ -7,9 +7,9 @@ import java.util.*
 import javax.crypto.SecretKey
 
 @Service
-class JwtService {
+class JwtService(password: String = "una-clave-super-secreta-y-larga-para-jwt123") {
 
-    private val secretKey: SecretKey = Keys.hmacShaKeyFor("una-clave-super-secreta-y-larga-para-jwt123".toByteArray())
+    private val secretKey: SecretKey = Keys.hmacShaKeyFor(password.toByteArray())
 
     fun generateToken(username: String): String {
         return Jwts.builder()

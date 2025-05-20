@@ -43,6 +43,8 @@ dependencies {
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
 	testImplementation("org.springframework.security:spring-security-test")
+	testImplementation("org.mockito:mockito-core:5.3.1")
+	testImplementation("org.mockito.kotlin:mockito-kotlin:5.0.0")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.1.0")
 	implementation("io.jsonwebtoken:jjwt-api:0.12.6")

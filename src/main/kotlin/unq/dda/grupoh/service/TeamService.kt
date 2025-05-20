@@ -46,4 +46,8 @@ class TeamService(
         val team = getTeam(teamName)
         return footballDataService.findMatchesByTeam(team)
     }
+
+    fun getNextMatchesByTeamName(teamName: String): List<Match> {
+        return getMatchesByTeamName(teamName).filter { it.isNotPlayedYet() }
+    }
 }
