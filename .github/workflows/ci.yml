@@ -24,7 +24,7 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: Ejecutar tests y generar cobertura
-        run: ./gradlew test jacocoTestReport
+        run: ./gradlew test jacocoTestReport -Dfootball-data-api.token=${{ secrets.FOOTBALL_DATA_API_TOKEN }}
 
       - name: Subir reporte de cobertura como artefacto
         uses: actions/upload-artifact@v4
