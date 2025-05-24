@@ -6,10 +6,14 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
+import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.web.servlet.HandlerExceptionResolver
 
 @Configuration
 class SecurityConfig(
-    private val jwtAuthFilter: JwtAuthFilter
+    private val jwtAuthFilter: JwtAuthFilter,
+    @Qualifier("handlerExceptionResolver")
+    private val resolver: HandlerExceptionResolver
 ) {
 
     @Bean
@@ -23,14 +27,27 @@ class SecurityConfig(
                     "/swagger-ui.html",
                     "/ping",
                     "/auth/register",
-                    "/auth/login"
+                    "/auth/login",
+                    "/error"
                 ).permitAll()
                     .anyRequest().authenticated()
             }
             .sessionManagement {
                 it.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             }
+            .exceptionHandling {
+                it.authenticationEntryPoint { request, response, authException ->
+                    if (response.isCommitted) return@authenticationEntryPoint
+                    resolver.resolveException(request, response, null, authException)
+                }
+                it.accessDeniedHandler { request, response, accessDeniedException ->
+                    resolver.resolveException(request, response, null, accessDeniedException)
+                }
+            }
             .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter::class.java)
+            .httpBasic { it.disable() }
+            .requestCache { it.disable() }
+
         return http.build()
     }
 }
