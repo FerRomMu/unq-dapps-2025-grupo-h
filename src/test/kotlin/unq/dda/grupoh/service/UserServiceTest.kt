@@ -2,9 +2,11 @@ package unq.dda.grupoh.service
 
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.mockito.kotlin.*
 import unq.dda.grupoh.model.UserAccount
 import unq.dda.grupoh.repository.UserRepository
+import java.lang.IllegalArgumentException
 
 class UserServiceTest {
 
@@ -72,7 +74,7 @@ class UserServiceTest {
     fun `register saves new user with given username and password`() {
         val username = "newUser"
         val password = "newPass"
-
+        whenever(userRepository.existsById(username)).thenReturn(false)
         userService.register(username, password)
 
         val expectedUser = UserAccount(username, password)
@@ -80,5 +82,16 @@ class UserServiceTest {
             assertEquals(expectedUser.username, it.username)
             assertEquals(expectedUser.password, it.password)
         })
+    }
+
+    @Test
+    fun `register throws IllegalArgumentException when username is already in use`() {
+        val username = "newUser"
+        val password = "newPass"
+        whenever(userRepository.existsById(username)).thenReturn(true)
+
+        assertThrows<IllegalArgumentException> {
+            userService.register(username, password)
+        }
     }
 }

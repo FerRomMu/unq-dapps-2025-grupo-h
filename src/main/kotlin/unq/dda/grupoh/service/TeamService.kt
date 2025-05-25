@@ -16,10 +16,14 @@ class TeamService(
 ) {
 
     @Transactional
-    fun saveOrUpdateByName(team: Team): Team {
-        val updated = teamRepository.updateByName(team)
-        return if (updated == 0) teamRepository.save(team)
-        else teamRepository.findByName(team.name)!!
+    private fun saveOrUpdateByName(team: Team): Team {
+        val existing = teamRepository.findByName(team.name)
+        return if (existing == null) {
+            teamRepository.save(team)
+        } else {
+            if (existing.players.isEmpty()) existing.players = team.players
+            teamRepository.save(existing)
+        }
     }
 
     fun getTeam(teamName: String): Team {

@@ -1,10 +1,8 @@
 package unq.dda.grupoh.service
 
-import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.*
-import org.springframework.transaction.annotation.Transactional
 import unq.dda.grupoh.exceptions.ResourceNotFoundException
 import unq.dda.grupoh.model.Match
 import unq.dda.grupoh.model.Team
@@ -16,34 +14,6 @@ class TeamServiceTest {
     private val teamRepository: TeamRepository = mock()
     private val footballDataService: FootballDataService = mock()
     private val teamService = TeamService(teamRepository, footballDataService)
-
-    @Test
-    fun `saveOrUpdateByName saves team if update returns 0`() {
-        val team = Team(name = "TeamA", apiId = 1, players = emptyList())
-        whenever(teamRepository.updateByName(team)).thenReturn(0)
-        whenever(teamRepository.save(team)).thenReturn(team)
-
-        val result = teamService.saveOrUpdateByName(team)
-
-        assertEquals(team, result)
-        verify(teamRepository).updateByName(team)
-        verify(teamRepository).save(team)
-        verify(teamRepository, never()).findByName(any())
-    }
-
-    @Test
-    fun `saveOrUpdateByName returns updated team if update was successful`() {
-        val team = Team(name = "TeamB", apiId = 2, players = emptyList())
-        whenever(teamRepository.updateByName(team)).thenReturn(1)
-        whenever(teamRepository.findByName(team.name)).thenReturn(team)
-
-        val result = teamService.saveOrUpdateByName(team)
-
-        assertEquals(team, result)
-        verify(teamRepository).updateByName(team)
-        verify(teamRepository, never()).save(any())
-        verify(teamRepository).findByName(team.name)
-    }
 
     @Test
     fun `getTeam returns team from repository if found`() {
@@ -69,7 +39,6 @@ class TeamServiceTest {
         val result = teamService.getTeam(teamName)
 
         assertEquals(mainTeam, result)
-        verify(teamRepository).findByName(teamName)
         verify(footballDataService).findTeamByName(teamName)
         allTeams.forEach {
             verify(teamRepository).save(it)
@@ -93,6 +62,24 @@ class TeamServiceTest {
     }
 
     @Test
+    fun `getTeam saves allTeams even if mainTeam is null`() {
+        val teamName = "TeamF"
+        val team1 = Team(name = "Sub1", apiId = 6, players = emptyList())
+        val team2 = Team(name = "Sub2", apiId = 7, players = emptyList())
+        val allTeams = listOf(team1, team2)
+
+        whenever(teamRepository.findByName(teamName)).thenReturn(null)
+        whenever(footballDataService.findTeamByName(teamName)).thenReturn(Pair(null, allTeams))
+        whenever(teamRepository.save(org.mockito.kotlin.any<Team>())).thenAnswer { it.arguments[0] as Team }
+
+        assertThrows(ResourceNotFoundException::class.java) {
+            teamService.getTeam(teamName)
+        }
+        verify(teamRepository).save(team1)
+        verify(teamRepository).save(team2)
+    }
+
+    @Test
     fun `getPlayersByTeamName returns players if team has them`() {
         val teamName = "TeamF"
         val players = listOf("player1", "player2")
@@ -102,26 +89,25 @@ class TeamServiceTest {
         val result = teamService.getPlayersByTeamName(teamName)
 
         assertEquals(players, result)
-        verify(teamRepository).findByName(teamName)
         verifyNoMoreInteractions(footballDataService)
     }
 
     @Test
     fun `getPlayersByTeamName fetches team from footballDataService and updates if players empty`() {
         val teamName = "TeamG"
-        val emptyTeam = Team(name = teamName, apiId = 7, players = emptyList())
+        val emptyTeam = Team(teamId = 1, name = teamName, apiId = 7, players = emptyList())
         val fetchedTeam = Team(name = teamName, apiId = 7, players = listOf("playerA", "playerB"))
+        val wantedTeam = Team(teamId = 1, name = teamName, apiId = 7, players = listOf("playerA", "playerB"))
 
         whenever(teamRepository.findByName(teamName)).thenReturn(emptyTeam)
         whenever(footballDataService.findTeamById(7, teamName)).thenReturn(fetchedTeam)
-        whenever(teamRepository.save(fetchedTeam)).thenReturn(fetchedTeam)
+        whenever(teamRepository.save(wantedTeam)).thenReturn(wantedTeam)
 
         val result = teamService.getPlayersByTeamName(teamName)
 
         assertEquals(fetchedTeam.players, result)
-        verify(teamRepository).findByName(teamName)
         verify(footballDataService).findTeamById(7, teamName)
-        verify(teamRepository).save(fetchedTeam)
+        verify(teamRepository).save(wantedTeam)
     }
 
     @Test

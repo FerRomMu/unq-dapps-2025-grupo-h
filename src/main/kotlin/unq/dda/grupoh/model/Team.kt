@@ -12,5 +12,5 @@ data class Team (
     val name: String,
     @Column(nullable = false)
     val apiId: Int,
-    val players: List<String> = emptyList()
+    var players: List<String> = emptyList()
 )
