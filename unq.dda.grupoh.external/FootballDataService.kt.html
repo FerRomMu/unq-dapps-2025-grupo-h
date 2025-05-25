@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>FootballDataService.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">grupoh</a> &gt; <a href="index.source.html" class="el_package">unq.dda.grupoh.external</a> &gt; <span class="el_source">FootballDataService.kt</span></div><h1>FootballDataService.kt</h1><pre class="source lang-java linenums">package unq.dda.grupoh.external
+
+import unq.dda.grupoh.model.Team
+import java.net.http.HttpClient
+import kotlinx.serialization.json.Json
+import org.springframework.beans.factory.annotation.Value
+import org.springframework.stereotype.Service
+import unq.dda.grupoh.dto.footballData.MatchesResponse
+import unq.dda.grupoh.dto.footballData.TeamDetailResponse
+import unq.dda.grupoh.dto.footballData.TeamResponse
+import unq.dda.grupoh.exceptions.ExternalErrorException
+import unq.dda.grupoh.model.Match
+import java.net.URI
+import java.net.http.HttpRequest
+import java.net.http.HttpResponse
+import java.time.Duration
+
+<span class="fc" id="L18">@Service</span>
+<span class="fc" id="L19">class FootballDataService(</span>
+<span class="fc" id="L20">    @Value(&quot;\${football-data-api.token}&quot;) private val apiToken: String,</span>
+<span class="fc" id="L21">    private val client: HttpClient = HttpClient.newBuilder().build()</span>
+) {
+
+<span class="fc" id="L24">    private val baseUrl: String = &quot;https://api.football-data.org/v4/&quot;</span>
+    private var offset: Int = 0
+<span class="fc" id="L26">    private val json = Json { ignoreUnknownKeys = true }</span>
+
+<span class="fc" id="L28">    private fun fetch(url: String) = client.send(</span>
+<span class="fc" id="L29">        HttpRequest.newBuilder()</span>
+<span class="fc" id="L30">            .uri(URI.create(url))</span>
+<span class="fc" id="L31">            .timeout(Duration.ofSeconds(10))</span>
+<span class="fc" id="L32">            .header(&quot;X-Auth-Token&quot;, apiToken)</span>
+<span class="fc" id="L33">            .build(),</span>
+<span class="fc" id="L34">        HttpResponse.BodyHandlers.ofString()</span>
+<span class="fc" id="L35">    )</span>
+
+    private fun fetchTeam(teamName: String): List&lt;Team&gt; {
+<span class="fc" id="L38">        val fullUrl = baseUrl + &quot;teams&quot;</span>
+<span class="fc" id="L39">        val limit = 500</span>
+
+<span class="fc" id="L41">        val allTeams = mutableListOf&lt;Team&gt;()</span>
+<span class="fc" id="L42">        var teamToFind: Team? = null</span>
+
+<span class="fc bfc" id="L44" title="All 2 branches covered.">        while (teamToFind == null) {</span>
+<span class="fc" id="L45">            val response = fetch(&quot;$fullUrl?limit=$limit&amp;offset=$offset&quot;)</span>
+
+<span class="pc bpc" id="L47" title="1 of 2 branches missed.">            if (response.statusCode() != 200) {</span>
+<span class="nc" id="L48">                print(&quot;Error at API call: ${response.statusCode()} - ${response.body()}&quot;)</span>
+<span class="nc" id="L49">                break</span>
+            }
+
+<span class="fc" id="L52">            val apiResponse = json.decodeFromString&lt;TeamResponse&gt;(response.body())</span>
+<span class="fc" id="L53">            val currentTeams = apiResponse.teams.map {</span>
+<span class="fc bfc" id="L54" title="All 2 branches covered.">                Team(name = it.shortName ?: it.name!!, apiId = it.id)</span>
+            }
+<span class="fc" id="L56">            allTeams.addAll(currentTeams)</span>
+
+<span class="pc bpc" id="L58" title="1 of 4 branches missed.">            teamToFind = currentTeams.find { it.name.equals(teamName, ignoreCase = true) }</span>
+
+<span class="pc bpc" id="L60" title="1 of 2 branches missed.">            if (apiResponse.count &lt; limit) {</span>
+<span class="nc" id="L61">                offset = 0</span>
+<span class="nc" id="L62">                break</span>
+            }
+
+<span class="fc" id="L65">            offset += limit</span>
+        }
+
+<span class="fc" id="L68">        return allTeams</span>
+    }
+
+    private fun fetchPlayers(teamId: Int): List&lt;String&gt; {
+<span class="fc" id="L72">        val response = fetch(&quot;$baseUrl/teams/$teamId&quot;)</span>
+
+<span class="pc bpc" id="L74" title="1 of 2 branches missed.">        if (response.statusCode() != 200) {</span>
+<span class="nc" id="L75">            throw ExternalErrorException(&quot;Error fetching players for team $teamId: ${response.statusCode()} - ${response.body()}&quot;)</span>
+        }
+
+<span class="fc" id="L78">        val teamDetailResponse = json.decodeFromString&lt;TeamDetailResponse&gt;(response.body())</span>
+<span class="pc bpc" id="L79" title="1 of 2 branches missed.">        return teamDetailResponse.squad?.map { it.name } ?: emptyList()</span>
+    }
+
+    fun fetchMatches(teamName: String, teamId: Int): List&lt;Match&gt; {
+<span class="fc" id="L83">        val response = fetch(&quot;$baseUrl/teams/$teamId/matches&quot;)</span>
+
+<span class="pc bpc" id="L85" title="1 of 2 branches missed.">        if (response.statusCode() != 200) {</span>
+<span class="nc" id="L86">            throw ExternalErrorException(&quot;Error fetching matches for team $teamId: ${response.statusCode()} - ${response.body()}&quot;)</span>
+        }
+
+<span class="fc" id="L89">        val matchesResponse = json.decodeFromString&lt;MatchesResponse&gt;(response.body())</span>
+
+<span class="fc" id="L91">        return matchesResponse.matches.map {</span>
+<span class="fc" id="L92">            Match(</span>
+<span class="fc" id="L93">                id = it.id,</span>
+<span class="fc" id="L94">                date = it.utcDate,</span>
+<span class="fc" id="L95">                status = it.status,</span>
+<span class="fc" id="L96">                stage = it.stage,</span>
+<span class="fc" id="L97">                homeTeam = it.homeTeam.name,</span>
+<span class="fc" id="L98">                awayTeam = it.awayTeam.name,</span>
+<span class="fc" id="L99">                scoreHome = it.score.fullTime.home,</span>
+<span class="fc" id="L100">                scoreAway = it.score.fullTime.away,</span>
+<span class="fc" id="L101">                winner = it.score.winner</span>
+            )
+        }
+    }
+
+    fun findTeamByName(teamName: String): Pair&lt;Team?, List&lt;Team&gt;&gt; {
+<span class="fc" id="L107">        val allTeams = fetchTeam(teamName)</span>
+<span class="pc bpc" id="L108" title="1 of 4 branches missed.">        var team = allTeams.find { it.name.equals(teamName, ignoreCase = true) }</span>
+<span class="pc bpc" id="L109" title="1 of 2 branches missed.">        if(team != null) {</span>
+<span class="fc" id="L110">            val players = fetchPlayers(team.apiId)</span>
+<span class="fc" id="L111">            team = team.copy(players = players)</span>
+        }
+<span class="fc" id="L113">        return Pair(team, allTeams)</span>
+    }
+
+    fun findTeamById(apiId: Int, name: String): Team =
+<span class="nc" id="L117">        Team(</span>
+<span class="nc" id="L118">            null,</span>
+<span class="nc" id="L119">            name,</span>
+<span class="nc" id="L120">            apiId,</span>
+<span class="nc" id="L121">            fetchPlayers(apiId)</span>
+<span class="nc" id="L122">        )</span>
+
+    fun findMatchesByTeam(team: Team): List&lt;Match&gt; =
+<span class="fc" id="L125">        fetchMatches(team.name, team.apiId)</span>
+<span class="fc" id="L126">}</span>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

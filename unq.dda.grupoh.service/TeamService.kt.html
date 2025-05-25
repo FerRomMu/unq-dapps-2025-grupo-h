@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TeamService.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">grupoh</a> &gt; <a href="index.source.html" class="el_package">unq.dda.grupoh.service</a> &gt; <span class="el_source">TeamService.kt</span></div><h1>TeamService.kt</h1><pre class="source lang-java linenums">package unq.dda.grupoh.service
+
+import kotlinx.coroutines.runBlocking
+import org.springframework.stereotype.Service
+import unq.dda.grupoh.exceptions.ResourceNotFoundException
+import unq.dda.grupoh.model.Team
+import unq.dda.grupoh.external.FootballDataService
+import unq.dda.grupoh.model.Match
+import unq.dda.grupoh.repository.TeamRepository
+import org.springframework.transaction.annotation.Transactional
+
+<span class="fc" id="L12">@Service</span>
+<span class="fc" id="L13">class TeamService(</span>
+<span class="fc" id="L14">    private val teamRepository: TeamRepository,</span>
+<span class="fc" id="L15">    private val footballDataService: FootballDataService</span>
+) {
+
+    @Transactional
+    private fun saveOrUpdateByName(team: Team): Team {
+<span class="fc" id="L20">        val existing = teamRepository.findByName(team.name)</span>
+<span class="fc bfc" id="L21" title="All 2 branches covered.">        return if (existing == null) {</span>
+<span class="fc" id="L22">            teamRepository.save(team)</span>
+<span class="fc" id="L23">        } else {</span>
+<span class="pc bpc" id="L24" title="1 of 2 branches missed.">            if (existing.players.isEmpty()) existing.players = team.players</span>
+<span class="fc" id="L25">            teamRepository.save(existing)</span>
+        }
+    }
+
+    fun getTeam(teamName: String): Team {
+<span class="fc bfc" id="L30" title="All 2 branches covered.">        return teamRepository.findByName(teamName)</span>
+<span class="fc" id="L31">            ?: run {</span>
+<span class="pc bpc" id="L32" title="1 of 2 branches missed.">                val (mainTeam, allTeams) = runBlocking { footballDataService.findTeamByName(teamName) }</span>
+<span class="fc" id="L33">                allTeams.forEach { saveOrUpdateByName(it) }</span>
+<span class="fc bfc" id="L34" title="All 2 branches covered.">                mainTeam ?: throw ResourceNotFoundException(&quot;Team not found.&quot;)</span>
+            }
+    }
+
+    fun getPlayersByTeamName(teamName: String): List&lt;String&gt; {
+<span class="fc" id="L39">        var team = getTeam(teamName)</span>
+
+<span class="fc bfc" id="L41" title="All 2 branches covered.">        if (team.players.isEmpty()) {</span>
+<span class="pc bpc" id="L42" title="1 of 2 branches missed.">            team = runBlocking { footballDataService.findTeamById(team.apiId, team.name) }</span>
+<span class="fc" id="L43">            saveOrUpdateByName(team)</span>
+        }
+
+<span class="fc" id="L46">        return team.players</span>
+    }
+
+    fun getMatchesByTeamName(teamName: String): List&lt;Match&gt; {
+<span class="fc" id="L50">        val team = getTeam(teamName)</span>
+<span class="fc" id="L51">        return footballDataService.findMatchesByTeam(team)</span>
+    }
+
+    fun getNextMatchesByTeamName(teamName: String): List&lt;Match&gt; {
+<span class="fc" id="L55">        return getMatchesByTeamName(teamName).filter { it.isNotPlayedYet() }</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

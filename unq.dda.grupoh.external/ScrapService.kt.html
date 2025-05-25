@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ScrapService.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">grupoh</a> &gt; <a href="index.source.html" class="el_package">unq.dda.grupoh.external</a> &gt; <span class="el_source">ScrapService.kt</span></div><h1>ScrapService.kt</h1><pre class="source lang-java linenums">package unq.dda.grupoh.external
+
+
+<span class="nc" id="L4">class ScrapService {</span>
+    /*private fun createDriver(): WebDriver {
+        val options = ChromeOptions()
+        options.addArguments(
+                &quot;--headless=new&quot;,
+                &quot;--no-sandbox&quot;,
+                &quot;--disable-dev-shm-usage&quot;,
+                &quot;--disable-gpu&quot;,
+                &quot;--user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.36&quot;
+            )
+        options.setPageLoadStrategy(PageLoadStrategy.NORMAL)
+        options.setBinary(System.getenv(&quot;CHROME_BIN&quot;) ?: &quot;C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe&quot;)
+
+        return ChromeDriver(options)
+    }
+
+    private fun fetchPlayers(teamName: String): List&lt;String&gt; {
+        val driver: WebDriver = createDriver()
+        val baseUrl = &quot;https://es.whoscored.com&quot;
+
+        driver.get(&quot;$baseUrl/regions/11/tournaments/68/seasons/10573/argentina-liga-profesional&quot;)
+        val wait = WebDriverWait(driver, Duration.ofSeconds(2))
+
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.className(&quot;standings&quot;)))
+        val teamsTable = driver.findElement(By.className(&quot;standings&quot;))
+        wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.className(&quot;team-link&quot;)))
+        val links = teamsTable.findElements(By.className(&quot;team-link&quot;))
+
+        val targetLink = links
+            .firstOrNull {
+                it.text.equals(teamName, true) || it.text.contains(teamName, true)
+            }?.getAttribute(&quot;href&quot;) ?: throw ResourceNotFoundException(&quot;Team $teamName not found.&quot;)
+
+        driver.get(targetLink)
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id(&quot;player-table-statistics-body&quot;)))
+        val playersTable = driver.findElement(By.id(&quot;player-table-statistics-body&quot;))
+
+        wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.className(&quot;iconize&quot;)))
+
+        val teamPlayers = playersTable.findElements(By.className(&quot;iconize&quot;))
+            .mapNotNull { it.text.takeIf { txt -&gt; txt.isNotBlank() } }
+
+        if (teamPlayers.isEmpty()) throw ResourceNotFoundException(&quot;Players of $teamName not found&quot;)
+
+        driver.quit()
+
+        return teamPlayers
+    }*/
+
+    //fun findByName(teamName: String): Team = Team(null, teamName, fetchPlayers(teamName))
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MatchDTO.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">grupoh</a> &gt; <a href="index.source.html" class="el_package">unq.dda.grupoh.dto.footballData</a> &gt; <span class="el_source">MatchDTO.kt</span></div><h1>MatchDTO.kt</h1><pre class="source lang-java linenums">package unq.dda.grupoh.dto.footballData
+
+import kotlinx.serialization.Serializable
+
+<span class="pc bpc" id="L5" title="2 of 21 branches missed.">@Serializable</span>
+<span class="nc" id="L6">data class MatchDTO(</span>
+<span class="nc" id="L7">    val area: AreaDTO,</span>
+<span class="nc" id="L8">    val competition: CompetitionDTO,</span>
+<span class="nc" id="L9">    val season: SeasonDTO,</span>
+<span class="pc" id="L10">    val id: Int,</span>
+<span class="pc" id="L11">    val utcDate: String,</span>
+<span class="pc" id="L12">    val status: String,</span>
+<span class="nc" id="L13">    val matchday: Int? = null,</span>
+<span class="pc" id="L14">    val stage: String,</span>
+<span class="nc" id="L15">    val group: String? = null,</span>
+<span class="nc" id="L16">    val lastUpdated: String,</span>
+<span class="pc" id="L17">    val homeTeam: TeamInfoDTO,</span>
+<span class="pc" id="L18">    val awayTeam: TeamInfoDTO,</span>
+<span class="pc" id="L19">    val score: ScoreDTO,</span>
+<span class="nc" id="L20">    val odds: OddsDTO? = null,</span>
+<span class="nc" id="L21">    val referees: List&lt;RefereeDTO&gt;? = emptyList()</span>
+<span class="pc" id="L22">)</span>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

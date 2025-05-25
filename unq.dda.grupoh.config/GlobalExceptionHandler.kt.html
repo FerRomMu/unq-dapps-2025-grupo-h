@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GlobalExceptionHandler.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">grupoh</a> &gt; <a href="index.source.html" class="el_package">unq.dda.grupoh.config</a> &gt; <span class="el_source">GlobalExceptionHandler.kt</span></div><h1>GlobalExceptionHandler.kt</h1><pre class="source lang-java linenums">package unq.dda.grupoh.config
+
+import io.jsonwebtoken.ExpiredJwtException
+import io.jsonwebtoken.security.SignatureException
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
+import org.springframework.security.authentication.BadCredentialsException
+import org.springframework.security.core.AuthenticationException // Importar
+import org.springframework.web.bind.annotation.ControllerAdvice
+import org.springframework.web.bind.annotation.ExceptionHandler
+import org.springframework.web.bind.annotation.ResponseStatus
+import org.springframework.web.context.request.WebRequest
+import org.springframework.web.servlet.NoHandlerFoundException
+import unq.dda.grupoh.exceptions.ResourceNotFoundException
+
+<span class="fc" id="L16">@ControllerAdvice</span>
+<span class="fc" id="L17">class GlobalExceptionHandler {</span>
+
+    @ExceptionHandler(value = [ResourceNotFoundException::class])
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    fun handleResourceNotFoundException(ex: ResourceNotFoundException, request: WebRequest): ResponseEntity&lt;Any&gt; {
+<span class="nc" id="L22">        val errorDetails = mapOf(</span>
+<span class="nc" id="L23">            &quot;timestamp&quot; to System.currentTimeMillis(),</span>
+<span class="nc" id="L24">            &quot;status&quot; to HttpStatus.NOT_FOUND.value(),</span>
+<span class="nc" id="L25">            &quot;error&quot; to &quot;Not Found&quot;,</span>
+<span class="nc" id="L26">            &quot;message&quot; to ex.message,</span>
+<span class="nc" id="L27">            &quot;path&quot; to request.getDescription(false)</span>
+        )
+<span class="nc" id="L29">        return ResponseEntity(errorDetails, HttpStatus.NOT_FOUND)</span>
+    }
+
+    @ExceptionHandler(value = [NoHandlerFoundException::class])
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    fun handleNoHandlerFoundException(ex: NoHandlerFoundException, request: WebRequest): ResponseEntity&lt;Any&gt; {
+<span class="nc" id="L35">        val errorDetails = mapOf(</span>
+<span class="nc" id="L36">            &quot;timestamp&quot; to System.currentTimeMillis(),</span>
+<span class="nc" id="L37">            &quot;status&quot; to HttpStatus.NOT_FOUND.value(),</span>
+<span class="nc" id="L38">            &quot;error&quot; to &quot;Not Found&quot;,</span>
+<span class="nc" id="L39">            &quot;message&quot; to &quot;No se encontró el endpoint: ${ex.requestURL}&quot;,</span>
+<span class="nc" id="L40">            &quot;path&quot; to request.getDescription(false)</span>
+        )
+<span class="nc" id="L42">        return ResponseEntity(errorDetails, HttpStatus.NOT_FOUND)</span>
+    }
+
+    @ExceptionHandler(value = [IllegalArgumentException::class])
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    fun handleIllegalArgumentException(ex: IllegalArgumentException, request: WebRequest): ResponseEntity&lt;Any&gt; {
+<span class="nc" id="L48">        val errorDetails = mapOf(</span>
+<span class="nc" id="L49">            &quot;timestamp&quot; to System.currentTimeMillis(),</span>
+<span class="nc" id="L50">            &quot;status&quot; to HttpStatus.BAD_REQUEST.value(),</span>
+<span class="nc" id="L51">            &quot;error&quot; to &quot;Bad Request&quot;,</span>
+<span class="nc" id="L52">            &quot;message&quot; to ex.message,</span>
+<span class="nc" id="L53">            &quot;path&quot; to request.getDescription(false)</span>
+        )
+<span class="nc" id="L55">        return ResponseEntity(errorDetails, HttpStatus.BAD_REQUEST)</span>
+    }
+
+    // Maneja específicamente las AuthenticationException y sus subclases (401)
+    @ExceptionHandler(value = [AuthenticationException::class])
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    fun handleAuthenticationException(ex: AuthenticationException, request: WebRequest): ResponseEntity&lt;Any&gt; {
+<span class="nc" id="L62">        val message = when (ex) {</span>
+<span class="nc bnc" id="L63" title="All 2 branches missed.">            is SignatureException -&gt; &quot;Token inválido: Firma JWT no válida.&quot;</span>
+<span class="nc bnc" id="L64" title="All 2 branches missed.">            is ExpiredJwtException -&gt; &quot;Token expirado: El JWT ha caducado.&quot;</span>
+<span class="nc bnc" id="L65" title="All 2 branches missed.">            is BadCredentialsException -&gt; &quot;Credenciales inválidas.&quot;</span>
+<span class="nc" id="L66">            else -&gt; &quot;Error de autenticación: Acceso no autorizado.&quot;</span>
+        }
+<span class="nc" id="L68">        val errorDetails = mapOf(</span>
+<span class="nc" id="L69">            &quot;timestamp&quot; to System.currentTimeMillis(),</span>
+<span class="nc" id="L70">            &quot;status&quot; to HttpStatus.UNAUTHORIZED.value(),</span>
+<span class="nc" id="L71">            &quot;error&quot; to &quot;Unauthorized&quot;,</span>
+<span class="nc" id="L72">            &quot;message&quot; to message,</span>
+<span class="nc" id="L73">            &quot;path&quot; to request.getDescription(false)</span>
+        )
+<span class="nc" id="L75">        return ResponseEntity(errorDetails, HttpStatus.UNAUTHORIZED)</span>
+    }
+
+    // Manejo de cualquier otra excepción no capturada (500 Internal Server Error)
+    @ExceptionHandler(value = [Exception::class])
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    fun handleGlobalException(ex: Exception, request: WebRequest): ResponseEntity&lt;Any&gt; {
+<span class="nc" id="L82">        println(&quot;Error interno del servidor: ${ex.message}&quot;)</span>
+<span class="nc" id="L83">        ex.printStackTrace()</span>
+
+<span class="nc" id="L85">        val errorDetails = mapOf(</span>
+<span class="nc" id="L86">            &quot;timestamp&quot; to System.currentTimeMillis(),</span>
+<span class="nc" id="L87">            &quot;status&quot; to HttpStatus.INTERNAL_SERVER_ERROR.value(),</span>
+<span class="nc" id="L88">            &quot;error&quot; to &quot;Internal Server Error&quot;,</span>
+<span class="nc" id="L89">            &quot;message&quot; to &quot;Ha ocurrido un error inesperado. Por favor, intente de nuevo más tarde.&quot;,</span>
+<span class="nc" id="L90">            &quot;path&quot; to request.getDescription(false)</span>
+        )
+<span class="nc" id="L92">        return ResponseEntity(errorDetails, HttpStatus.INTERNAL_SERVER_ERROR)</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

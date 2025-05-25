@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TeamFactory.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">grupoh</a> &gt; <a href="index.source.html" class="el_package">unq.dda.grupoh.model.factory</a> &gt; <span class="el_source">TeamFactory.kt</span></div><h1>TeamFactory.kt</h1><pre class="source lang-java linenums">package unq.dda.grupoh.model.factory
+
+import unq.dda.grupoh.model.Team
+
+<span class="fc" id="L5">class TeamFactory {</span>
+<span class="fc" id="L6">    private val playerLetters = listOf(&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;, &quot;E&quot;, &quot;F&quot;, &quot;G&quot;, &quot;H&quot;, &quot;I&quot;, &quot;J&quot;, &quot;K&quot;)</span>
+
+<span class="fc" id="L8">    fun createInitialTeams(count: Int = 10): List&lt;Team&gt; {</span>
+        fun createTeam(name: String, apiId: Int, players: List&lt;String&gt;): Team {
+<span class="fc" id="L10">            return Team(name = name, apiId = apiId, players = players)</span>
+        }
+
+<span class="fc" id="L13">        return (1..count).map { index -&gt;</span>
+<span class="fc" id="L14">            createTeam(</span>
+<span class="fc" id="L15">                name = &quot;Equipo $index&quot;,</span>
+<span class="fc" id="L16">                apiId = 0,</span>
+<span class="fc" id="L17">                players = playerLetters.map { letter -&gt; &quot;Jugador ${index}$letter&quot; }</span>
+            )
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>
