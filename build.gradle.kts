@@ -113,6 +113,16 @@ tasks.jacocoTestReport {
 	reports {
 		html.required.set(true)
 	}
+	classDirectories.setFrom(
+		files(classDirectories.files.map {
+			fileTree(it) {
+				exclude(
+					"unq/dda/grupoh/GrupohApplication.class",
+					"unq/dda/grupoh/dto/**"
+				)
+			}
+		})
+	)
 }
 
 tasks.test {
