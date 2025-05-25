@@ -113,18 +113,6 @@ tasks.jacocoTestReport {
 	reports {
 		html.required.set(true)
 	}
-	afterEvaluate {
-		classDirectories.setFrom(
-			files(classDirectories.files.map {
-				fileTree(it) {
-					exclude(
-						"**/GrupohApplication.class",
-						"**/dto/**"
-					)
-				}
-			})
-		)
-	}
 }
 
 tasks.test {
