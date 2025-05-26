@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AuthController.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">grupoh</a> &gt; <a href="index.source.html" class="el_package">unq.dda.grupoh.controller</a> &gt; <span class="el_source">AuthController.kt</span></div><h1>AuthController.kt</h1><pre class="source lang-java linenums">package unq.dda.grupoh.controller
 
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.media.Content
+import io.swagger.v3.oas.annotations.media.Schema
+import io.swagger.v3.oas.annotations.responses.ApiResponse
+import io.swagger.v3.oas.annotations.responses.ApiResponses
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping
@@ -10,35 +15,61 @@ import unq.dda.grupoh.dto.LoginRequest
 import unq.dda.grupoh.service.JwtService
 import unq.dda.grupoh.service.UserService
 
-<span class="fc" id="L13">@RestController</span>
+<span class="fc" id="L18">@RestController</span>
 @RequestMapping(&quot;/auth&quot;)
-<span class="fc" id="L15">class AuthController(</span>
-<span class="fc" id="L16">    private val jwtService: JwtService,</span>
-<span class="fc" id="L17">    private val userService: UserService</span>
+<span class="fc" id="L20">class AuthController(</span>
+<span class="fc" id="L21">    private val jwtService: JwtService,</span>
+<span class="fc" id="L22">    private val userService: UserService</span>
 ) {
 
+    @Operation(
+        summary = &quot;Login de usuario&quot;,
+        description = &quot;Autentica al usuario con nombre de usuario y contraseña, devuelve token JWT si es correcto&quot;
+    )
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = &quot;200&quot;,
+                description = &quot;Autenticación exitosa, retorna token JWT&quot;,
+                content = [Content(
+                    mediaType = &quot;application/json&quot;
+                )]
+            ),
+            ApiResponse(responseCode = &quot;401&quot;, description = &quot;Credenciales inválidas&quot;)
+        ]
+    )
     @PostMapping(&quot;/login&quot;)
     fun login(@RequestBody loginRequest: LoginRequest): ResponseEntity&lt;*&gt; {
-<span class="fc" id="L22">        val (username, password) = loginRequest</span>
+<span class="fc" id="L43">        val (username, password) = loginRequest</span>
 
-<span class="fc bfc" id="L24" title="All 2 branches covered.">        if (userService.authenticate(username, password)) {</span>
-<span class="fc" id="L25">            val token = jwtService.generateToken(username)</span>
-<span class="fc" id="L26">            return ResponseEntity.ok(mapOf(&quot;token&quot; to token))</span>
+<span class="fc bfc" id="L45" title="All 2 branches covered.">        if (userService.authenticate(username, password)) {</span>
+<span class="fc" id="L46">            val token = jwtService.generateToken(username)</span>
+<span class="fc" id="L47">            return ResponseEntity.ok(mapOf(&quot;token&quot; to token))</span>
         }
 
-<span class="fc" id="L29">        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(&quot;Invalid credentials&quot;)</span>
+<span class="fc" id="L50">        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(&quot;Invalid credentials&quot;)</span>
     }
 
+    @Operation(
+        summary = &quot;Registro de usuario&quot;,
+        description = &quot;Crea un nuevo usuario con nombre de usuario y contraseña&quot;
+    )
+    @ApiResponses(
+        value = [
+            ApiResponse(responseCode = &quot;201&quot;, description = &quot;Usuario registrado correctamente&quot;),
+            ApiResponse(responseCode = &quot;409&quot;, description = &quot;Nombre de usuario ya existente&quot;)
+        ]
+    )
     @PostMapping(&quot;/register&quot;)
     fun register(@RequestBody loginRequest: LoginRequest): ResponseEntity&lt;*&gt; {
-<span class="fc" id="L34">        val (username, password) = loginRequest</span>
+<span class="fc" id="L65">        val (username, password) = loginRequest</span>
 
-<span class="fc bfc" id="L36" title="All 2 branches covered.">        if (userService.exists(username)) {</span>
-<span class="fc" id="L37">            return ResponseEntity.status(HttpStatus.CONFLICT).body(&quot;Username already taken&quot;)</span>
+<span class="fc bfc" id="L67" title="All 2 branches covered.">        if (userService.exists(username)) {</span>
+<span class="fc" id="L68">            return ResponseEntity.status(HttpStatus.CONFLICT).body(&quot;Username already taken&quot;)</span>
         }
 
-<span class="fc" id="L40">        userService.register(username, password)</span>
-<span class="fc" id="L41">        return ResponseEntity.status(HttpStatus.CREATED).body(&quot;User registered successfully&quot;)</span>
+<span class="fc" id="L71">        userService.register(username, password)</span>
+<span class="fc" id="L72">        return ResponseEntity.status(HttpStatus.CREATED).body(&quot;User registered successfully&quot;)</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>
