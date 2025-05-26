@@ -19,9 +19,7 @@ class UserService(
 
     fun register(username: String, password: String) {
         val newUser = UserAccount(username, password)
-        if(exists(username)) {
-            throw IllegalArgumentException("Username already exists")
-        }
+        require(!exists(username)) { "Username already exists" }
         userRepository.save(newUser)
     }
 }
