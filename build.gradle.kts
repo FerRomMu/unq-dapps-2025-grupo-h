@@ -23,6 +23,34 @@ configurations {
 	}
 }
 
+configurations.all {
+	resolutionStrategy {
+		// Force Spring Framework versions to match Spring Boot 3.4.4's expected version (6.2.5)
+		force(
+			"org.springframework:spring-core:6.2.5",
+			"org.springframework:spring-beans:6.2.5",
+			"org.springframework:spring-context:6.2.5",
+			"org.springframework:spring-web:6.2.5",
+			"org.springframework:spring-webmvc:6.2.5",
+			"org.springframework:spring-aop:6.2.5",
+			"org.springframework:spring-expression:6.2.5",
+			"org.springframework:spring-jcl:6.2.5",
+			"org.springframework:spring-jdbc:6.2.5",
+			"org.springframework:spring-tx:6.2.5",
+			"org.springframework:spring-orm:6.2.5",
+			"org.springframework:spring-aspects:6.2.5",
+			"org.springframework:spring-context-support:6.2.5",
+			"org.springframework.security:spring-security-core:6.4.4",
+			"org.springframework.security:spring-security-config:6.4.4",
+			"org.springframework.security:spring-security-web:6.4.4",
+			"org.springframework.security:spring-security-crypto:6.4.4",
+			"org.springframework.security:spring-security-oauth2-resource-server:6.4.4",
+			"org.springframework.security:spring-security-oauth2-core:6.4.4",
+			"org.springframework.security:spring-security-oauth2-jose:6.4.4"
+		)
+	}
+}
+
 repositories {
 	mavenCentral()
 }
@@ -60,7 +88,8 @@ dependencies {
 	// For input validation and generating OpenAPI (Swagger) documentation.
 	// -------------------------------------------------------------------------
 	implementation("org.springframework.boot:spring-boot-starter-validation")
-	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.1.0")
+	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.8")
+	//implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.1.0")
 
 	// -------------------------------------------------------------------------
 	// KOTLIN COROUTINES & SERIALIZATION
