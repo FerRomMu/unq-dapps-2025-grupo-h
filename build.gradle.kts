@@ -6,6 +6,7 @@ plugins {
 	kotlin("plugin.jpa") version "1.9.25"
 	kotlin("plugin.serialization") version "1.9.25"
 	jacoco
+	id("org.sonarqube") version "3.5.0.2730"
 }
 
 group = "unq.dda"
