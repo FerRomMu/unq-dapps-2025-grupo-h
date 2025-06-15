@@ -1,13 +1,14 @@
 package unq.dda.grupoh.service
 
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.*
 import unq.dda.grupoh.exceptions.ResourceNotFoundException
+import unq.dda.grupoh.external.FootballDataService
 import unq.dda.grupoh.model.Match
 import unq.dda.grupoh.model.Team
 import unq.dda.grupoh.repository.TeamRepository
-import unq.dda.grupoh.external.FootballDataService
 
 class TeamServiceTest {
 

@@ -2,12 +2,12 @@ package unq.dda.grupoh.service
 
 import kotlinx.coroutines.runBlocking
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import unq.dda.grupoh.exceptions.ResourceNotFoundException
-import unq.dda.grupoh.model.Team
 import unq.dda.grupoh.external.FootballDataService
 import unq.dda.grupoh.model.Match
+import unq.dda.grupoh.model.Team
 import unq.dda.grupoh.repository.TeamRepository
-import org.springframework.transaction.annotation.Transactional
 
 @Service
 class TeamService(

@@ -3,7 +3,6 @@ package unq.dda.grupoh.controller
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.*
-import unq.dda.grupoh.controller.TeamController
 import unq.dda.grupoh.model.Match
 import unq.dda.grupoh.service.TeamService
 

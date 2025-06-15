@@ -1,7 +1,5 @@
 package unq.dda.grupoh.external
 
-import unq.dda.grupoh.model.Team
-import java.net.http.HttpClient
 import kotlinx.serialization.json.Json
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
@@ -10,7 +8,9 @@ import unq.dda.grupoh.dto.footballData.TeamDetailResponse
 import unq.dda.grupoh.dto.footballData.TeamResponse
 import unq.dda.grupoh.exceptions.ExternalErrorException
 import unq.dda.grupoh.model.Match
+import unq.dda.grupoh.model.Team
 import java.net.URI
+import java.net.http.HttpClient
 import java.net.http.HttpRequest
 import java.net.http.HttpResponse
 import java.time.Duration

@@ -6,7 +6,6 @@ import org.junit.jupiter.api.assertThrows
 import org.mockito.kotlin.*
 import unq.dda.grupoh.model.UserAccount
 import unq.dda.grupoh.repository.UserRepository
-import java.lang.IllegalArgumentException
 
 class UserServiceTest {
 
@@ -16,11 +15,11 @@ class UserServiceTest {
     @Test
     fun authenticateReturnsTrueWhenUserExistsAndPasswordMatches() {
         val username = "user1"
-        val testPwd = "pass123"
-        val user = UserAccount(username, testPwd)
+        val testPswd = "pass123"
+        val user = UserAccount(username, testPswd)
         whenever(userRepository.findByUsername(username)).thenReturn(user)
 
-        val result = userService.authenticate(username, testPwd)
+        val result = userService.authenticate(username, testPswd)
 
         assertTrue(result)
         verify(userRepository).findByUsername(username)
@@ -73,11 +72,11 @@ class UserServiceTest {
     @Test
     fun registerSavesNewUserWithGivenUsernameAndPassword() {
         val username = "newUser"
-        val testPwd = "newPass"
+        val testPswd = "newPass"
         whenever(userRepository.existsById(username)).thenReturn(false)
-        userService.register(username, testPwd)
+        userService.register(username, testPswd)
 
-        val expectedUser = UserAccount(username, testPwd)
+        val expectedUser = UserAccount(username, testPswd)
         verify(userRepository).save(check {
             assertEquals(expectedUser.username, it.username)
             assertEquals(expectedUser.password, it.password)
@@ -87,11 +86,11 @@ class UserServiceTest {
     @Test
     fun registerThrowsIllegalArgumentExceptionWhenUsernameIsAlreadyInUse() {
         val username = "newUser"
-        val testPwd = "newPass"
+        val testPswd = "newPass"
         whenever(userRepository.existsById(username)).thenReturn(true)
 
         assertThrows<IllegalArgumentException> {
-            userService.register(username, testPwd)
+            userService.register(username, testPswd)
         }
     }
 }
