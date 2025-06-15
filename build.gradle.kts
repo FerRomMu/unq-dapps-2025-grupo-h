@@ -156,6 +156,7 @@ tasks.jacocoTestReport {
 			fileTree(it) {
 				exclude(
 					"unq/dda/grupoh/GrupohApplication.class",
+					"unq/dda/grupoh/GrupohApplicationKt.class",
 					"unq/dda/grupoh/dto/**"
 				)
 			}
