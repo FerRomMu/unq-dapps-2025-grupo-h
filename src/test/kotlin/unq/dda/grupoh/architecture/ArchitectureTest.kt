@@ -51,7 +51,7 @@ class ArchitectureTest {
                 resideInAnyPackage(
                     "$basePackage.service..",
                     "$basePackage.repository..",
-                    "$basePackage.external..",
+                    "$basePackage.webservice..",
                     "$basePackage.model..",
                     "$basePackage.exceptions..",
                     javaStr,
@@ -84,13 +84,13 @@ class ArchitectureTest {
     }
 
     @Test
-    fun externalShouldOnlyBeAccessedByServicesAndSelf() {
+    fun webServiceShouldOnlyBeAccessedByServicesAndSelf() {
         val rule = classes()
-            .that().resideInAnyPackage("$basePackage.external..")
+            .that().resideInAnyPackage("$basePackage.webservice..")
             .should().onlyBeAccessed().byClassesThat(
                 resideInAnyPackage(
                     "$basePackage.service..",
-                    "$basePackage.external.."
+                    "$basePackage.webservice.."
                 )
             )
         rule.check(importedClasses)

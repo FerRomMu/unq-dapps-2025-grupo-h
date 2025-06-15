@@ -1,4 +1,4 @@
-package unq.dda.grupoh.external
+package unq.dda.grupoh.webservice
 
 class FootballDataServiceTest {
 

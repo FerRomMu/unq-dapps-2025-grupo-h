@@ -1,4 +1,4 @@
-package unq.dda.grupoh.external
+package unq.dda.grupoh.webservice
 
 import kotlinx.serialization.json.Json
 import org.springframework.beans.factory.annotation.Value

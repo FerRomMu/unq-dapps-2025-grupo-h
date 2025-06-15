@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.*
 import unq.dda.grupoh.exceptions.ResourceNotFoundException
-import unq.dda.grupoh.external.FootballDataService
+import unq.dda.grupoh.webservice.FootballDataService
 import unq.dda.grupoh.model.Match
 import unq.dda.grupoh.model.Team
 import unq.dda.grupoh.repository.TeamRepository

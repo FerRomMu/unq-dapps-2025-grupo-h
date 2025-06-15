@@ -15,7 +15,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
-import unq.dda.grupoh.external.FootballDataService
+import unq.dda.grupoh.webservice.FootballDataService
 import unq.dda.grupoh.model.Match
 import unq.dda.grupoh.model.Team
 
