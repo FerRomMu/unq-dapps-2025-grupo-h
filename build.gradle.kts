@@ -14,7 +14,7 @@ version = "0.0.1-SNAPSHOT"
 
 java {
 	toolchain {
-		languageVersion = JavaLanguageVersion.of(21)
+		languageVersion = JavaLanguageVersion.of(17) //21
 	}
 }
 
@@ -124,7 +124,7 @@ dependencies {
 	testImplementation("org.mockito:mockito-core:5.3.1")
 	testImplementation("org.mockito.kotlin:mockito-kotlin:5.0.0")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-
+	testImplementation("com.tngtech.archunit:archunit-junit5:1.0.0")
 	// -------------------------------------------------------------------------
 	// METRICAS
 	// Libraries for metrics.
