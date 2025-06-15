@@ -10,14 +10,14 @@ class JwtServiceTest {
     private val jwtService = JwtService()
 
     @Test
-    fun `generateToken returns non empty token`() {
+    fun generateTokenReturnsNonEmptyToken() {
         val token = jwtService.generateToken("user123")
         assertNotNull(token)
         assertTrue(token.isNotBlank())
     }
 
     @Test
-    fun `validateToken returns username when token valid`() {
+    fun validateTokenReturnsUsernameWhenTokenValid() {
         val username = "user123"
         val token = jwtService.generateToken(username)
         val result = jwtService.validateToken(token)
@@ -25,14 +25,14 @@ class JwtServiceTest {
     }
 
     @Test
-    fun `validateToken returns null when token invalid`() {
+    fun validateTokenReturnsNullWhenTokenInvalid() {
         val invalidToken = "invalid.token.value"
         val result = jwtService.validateToken(invalidToken)
         assertNull(result)
     }
 
     @Test
-    fun `validateToken returns null when token expired`() {
+    fun validateTokenReturnsNullWhenTokenExpired() {
         val expiredJwtService = object : JwtService("wellknown.passwordkey-for-this-test12345678") {
             override fun generateToken(username: String): String {
                 return io.jsonwebtoken.Jwts.builder()

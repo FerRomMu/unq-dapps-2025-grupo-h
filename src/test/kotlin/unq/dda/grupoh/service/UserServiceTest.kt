@@ -14,20 +14,20 @@ class UserServiceTest {
     private val userService = UserService(userRepository)
 
     @Test
-    fun `authenticate returns true when user exists and password matches`() {
+    fun authenticateReturnsTrueWhenUserExistsAndPasswordMatches() {
         val username = "user1"
-        val password = "pass123"
-        val user = UserAccount(username, password)
+        val testPwd = "pass123"
+        val user = UserAccount(username, testPwd)
         whenever(userRepository.findByUsername(username)).thenReturn(user)
 
-        val result = userService.authenticate(username, password)
+        val result = userService.authenticate(username, testPwd)
 
         assertTrue(result)
         verify(userRepository).findByUsername(username)
     }
 
     @Test
-    fun `authenticate returns false when user does not exist`() {
+    fun authenticateReturnsFalseWhenUserDoesNotExist() {
         whenever(userRepository.findByUsername(any())).thenReturn(null)
 
         val result = userService.authenticate("anyUser", "anyPass")
@@ -37,7 +37,7 @@ class UserServiceTest {
     }
 
     @Test
-    fun `authenticate returns false when password does not match`() {
+    fun authenticateReturnsFalseWhenPasswordDoesNotMatch() {
         val username = "user2"
         val user = UserAccount(username, "correctPass")
         whenever(userRepository.findByUsername(username)).thenReturn(user)
@@ -49,7 +49,7 @@ class UserServiceTest {
     }
 
     @Test
-    fun `exists returns true when userRepository existsById returns true`() {
+    fun existsReturnsTrueWhenUserRepositoryExistsByIdReturnsTrue() {
         val username = "user3"
         whenever(userRepository.existsById(username)).thenReturn(true)
 
@@ -60,7 +60,7 @@ class UserServiceTest {
     }
 
     @Test
-    fun `exists returns false when userRepository existsById returns false`() {
+    fun existsReturnsFalseWhenUserRepositoryExistsByIdReturnsFalse() {
         val username = "user4"
         whenever(userRepository.existsById(username)).thenReturn(false)
 
@@ -71,13 +71,13 @@ class UserServiceTest {
     }
 
     @Test
-    fun `register saves new user with given username and password`() {
+    fun registerSavesNewUserWithGivenUsernameAndPassword() {
         val username = "newUser"
-        val password = "newPass"
+        val testPwd = "newPass"
         whenever(userRepository.existsById(username)).thenReturn(false)
-        userService.register(username, password)
+        userService.register(username, testPwd)
 
-        val expectedUser = UserAccount(username, password)
+        val expectedUser = UserAccount(username, testPwd)
         verify(userRepository).save(check {
             assertEquals(expectedUser.username, it.username)
             assertEquals(expectedUser.password, it.password)
@@ -85,13 +85,13 @@ class UserServiceTest {
     }
 
     @Test
-    fun `register throws IllegalArgumentException when username is already in use`() {
+    fun registerThrowsIllegalArgumentExceptionWhenUsernameIsAlreadyInUse() {
         val username = "newUser"
-        val password = "newPass"
+        val testPwd = "newPass"
         whenever(userRepository.existsById(username)).thenReturn(true)
 
         assertThrows<IllegalArgumentException> {
-            userService.register(username, password)
+            userService.register(username, testPwd)
         }
     }
 }

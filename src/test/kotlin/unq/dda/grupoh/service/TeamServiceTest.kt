@@ -16,7 +16,7 @@ class TeamServiceTest {
     private val teamService = TeamService(teamRepository, footballDataService)
 
     @Test
-    fun `getTeam returns team from repository if found`() {
+    fun getTeamReturnsTeamFromRepositoryIfFound() {
         val team = Team(name = "TeamC", apiId = 3, players = emptyList())
         whenever(teamRepository.findByName(team.name)).thenReturn(team)
 
@@ -28,7 +28,7 @@ class TeamServiceTest {
     }
 
     @Test
-    fun `getTeam fetches from footballDataService and saves teams if not found in repository`() {
+    fun getTeamFetchesFromFootballDataServiceAndSavesTeamsIfNotFoundInRepository() {
         val teamName = "TeamD"
         val mainTeam = Team(name = teamName, apiId = 4, players = emptyList())
         val allTeams = listOf(mainTeam, Team(name = "Other", apiId = 5, players = emptyList()))
@@ -46,7 +46,7 @@ class TeamServiceTest {
     }
 
     @Test
-    fun `getTeam throws ResourceNotFoundException when no mainTeam returned by footballDataService`() {
+    fun getTeamThrowsResourceNotFoundExceptionWhenNoMainTeamReturnedByFootballDataService() {
         val teamName = "TeamE"
         val allTeams = listOf<Team>()
         whenever(teamRepository.findByName(teamName)).thenReturn(null)
@@ -62,7 +62,7 @@ class TeamServiceTest {
     }
 
     @Test
-    fun `getTeam saves allTeams even if mainTeam is null`() {
+    fun getTeamSavesAllTeamsEvenIfMainTeamIsNull() {
         val teamName = "TeamF"
         val team1 = Team(name = "Sub1", apiId = 6, players = emptyList())
         val team2 = Team(name = "Sub2", apiId = 7, players = emptyList())
@@ -80,7 +80,7 @@ class TeamServiceTest {
     }
 
     @Test
-    fun `getPlayersByTeamName returns players if team has them`() {
+    fun getPlayersByTeamNameReturnsPlayersIfTeamHasThem() {
         val teamName = "TeamF"
         val players = listOf("player1", "player2")
         val team = Team(name = teamName, apiId = 6, players = players)
@@ -93,7 +93,7 @@ class TeamServiceTest {
     }
 
     @Test
-    fun `getPlayersByTeamName fetches team from footballDataService and updates if players empty`() {
+    fun getPlayersByTeamNameFetchesTeamFromFootballDataServiceAndUpdatesIfPlayersEmpty() {
         val teamName = "TeamG"
         val emptyTeam = Team(teamId = 1, name = teamName, apiId = 7, players = emptyList())
         val fetchedTeam = Team(name = teamName, apiId = 7, players = listOf("playerA", "playerB"))
@@ -111,7 +111,7 @@ class TeamServiceTest {
     }
 
     @Test
-    fun `getMatchesByTeamName returns matches from footballDataService`() {
+    fun getMatchesByTeamNameReturnsMatchesFromFootballDataService() {
         val teamName = "TeamH"
         val team = Team(name = teamName, apiId = 8, players = emptyList())
         val matches = listOf(
@@ -130,7 +130,7 @@ class TeamServiceTest {
     }
 
     @Test
-    fun `getNextMatchesByTeamName filters matches not played yet`() {
+    fun getNextMatchesByTeamNameFiltersMatchesNotPlayedYet() {
         val teamName = "TeamI"
         val team = Team(name = teamName, apiId = 9, players = emptyList())
         val matchPlayed: Match = mock {
