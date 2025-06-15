@@ -28,7 +28,8 @@ class SecurityConfig(
                     "/ping",
                     "/auth/register",
                     "/auth/login",
-                    "/error"
+                    "/error",
+                    "/actuator/**"
                 ).permitAll()
                     .anyRequest().authenticated()
             }
