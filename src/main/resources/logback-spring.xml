@@ -1,0 +1,26 @@
+<configuration>
+
+    <appender name="STDOUT_CLEAN" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%highlight(LOGGER - %msg%n)</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Logger específico para el aspecto -->
+    <logger name="unq.dda.grupoh.config.aop.WebServiceLoggingAspect" level="INFO" additivity="false">
+        <appender-ref ref="STDOUT_CLEAN"/>
+    </logger>
+
+    <!-- Resto del sistema usa el logger por defecto -->
+    <root level="INFO">
+        <appender-ref ref="STDOUT"/>
+    </root>
+
+    <!-- Appender por defecto -->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread] %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+</configuration>

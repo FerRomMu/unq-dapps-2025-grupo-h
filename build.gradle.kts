@@ -125,12 +125,19 @@ dependencies {
 	testImplementation("org.mockito.kotlin:mockito-kotlin:5.0.0")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 	testImplementation("com.tngtech.archunit:archunit-junit5:1.0.0")
+
 	// -------------------------------------------------------------------------
 	// METRICAS
 	// Libraries for metrics.
 	// -------------------------------------------------------------------------
 	implementation("org.springframework.boot:spring-boot-starter-actuator")
 	implementation("io.micrometer:micrometer-registry-prometheus")
+
+	// -------------------------------------------------------------------------
+	// LOGGING
+	// Libraries for log.
+	// -------------------------------------------------------------------------
+	implementation("org.springframework.boot:spring-boot-starter-aop")
 }
 
 kotlin {
