@@ -2,12 +2,12 @@
 
 import kotlinx.coroutines.runBlocking
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import unq.dda.grupoh.exceptions.ResourceNotFoundException
-import unq.dda.grupoh.model.Team
 import unq.dda.grupoh.external.FootballDataService
 import unq.dda.grupoh.model.Match
+import unq.dda.grupoh.model.Team
 import unq.dda.grupoh.repository.TeamRepository
-import org.springframework.transaction.annotation.Transactional
 
 <span class="fc" id="L12">@Service</span>
 <span class="fc" id="L13">class TeamService(</span>
