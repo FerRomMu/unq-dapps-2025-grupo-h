@@ -33,6 +33,13 @@ jobs:
         env:
           FOOTBALL_DATA_API_TOKEN: ${{ secrets.FOOTBALL_DATA_API_TOKEN }}
 
+      - name: Análisis SonarCloud
+        uses: SonarSource/sonarcloud-github-action@v2
+        with:
+          projectBaseDir: .
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
       - name: Subir reporte de cobertura como artefacto
         uses: actions/upload-artifact@v4
         with:
