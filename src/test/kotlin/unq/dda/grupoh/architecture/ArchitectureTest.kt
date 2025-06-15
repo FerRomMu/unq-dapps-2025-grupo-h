@@ -18,7 +18,7 @@ class ArchitectureTest {
         .importPackages(basePackage)
 
     @Test
-    fun controllers_should_only_access_services() {
+    fun controllersShouldOnlyAccessServices() {
         val rule = classes()
             .that().resideInAnyPackage("$basePackage.controller..")
             .should().onlyDependOnClassesThat(
@@ -39,7 +39,7 @@ class ArchitectureTest {
     }
 
     @Test
-    fun services_should_not_depend_on_controllers_or_config() {
+    fun servicesShouldNotDependOnControllersOrConfig() {
         val rule = classes()
             .that().resideInAnyPackage("$basePackage.service..")
             .should().onlyDependOnClassesThat(
@@ -62,7 +62,7 @@ class ArchitectureTest {
     }
 
     @Test
-    fun repositories_should_only_depend_on_model() {
+    fun repositoriesShouldOnlyDependOnModel() {
         val rule = classes()
             .that().resideInAnyPackage("$basePackage.repository..")
             .should().onlyDependOnClassesThat(
@@ -79,7 +79,7 @@ class ArchitectureTest {
     }
 
     @Test
-    fun external_should_only_be_accessed_by_services_and_self() {
+    fun externalShouldOnlyBeAccessedByServicesAndSelf() {
         val rule = classes()
             .that().resideInAnyPackage("$basePackage.external..")
             .should().onlyBeAccessed().byClassesThat(
@@ -92,7 +92,7 @@ class ArchitectureTest {
     }
 
     @Test
-    fun no_backwards_dependencies_from_repository() {
+    fun noBackwardsDependenciesFromRepository() {
         val rule = noClasses()
             .that().resideInAnyPackage("$basePackage.repository..")
             .should().dependOnClassesThat()
@@ -104,7 +104,7 @@ class ArchitectureTest {
     }
 
     @Test
-    fun no_direct_db_access_from_controller() {
+    fun noDirectDbAccessFromController() {
         val rule = noClasses()
             .that().resideInAnyPackage("$basePackage.controller..")
             .should().dependOnClassesThat()
@@ -113,7 +113,7 @@ class ArchitectureTest {
     }
 
     @Test
-    fun no_cycles_between_packages() {
+    fun noCyclesBetweenPackages() {
         val rule = slices()
             .matching("$basePackage.(*)..")
             .should().beFreeOfCycles()

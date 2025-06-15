@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test
 class MatchTest {
 
     @Test
-    fun `isNotPlayedYet returns true when status is SCHEDULED`() {
+    fun isNotPlayedYetReturnsTrueWhenStatusIsSCHEDULED() {
         val match = Match(
             id = 1,
             date = "2025-05-01",
@@ -23,7 +23,7 @@ class MatchTest {
     }
 
     @Test
-    fun `isNotPlayedYet returns false when status is not SCHEDULED`() {
+    fun isNotPlayedYetReturnsfalseWhenStatusIsNotSCHEDULED() {
         val statuses = listOf("LIVE","IN_PLAY","PAUSED","FINISHED","POSTPONED","SUSPENDED","CANCELLED")
         statuses.forEach { status ->
             val match = Match(

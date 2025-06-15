@@ -74,7 +74,7 @@ class TeamControllerE2ETest(@Autowired val mockMvc: MockMvc) {
     }
 
     @Test
-    fun `get players by team name returns list`() {
+    fun getPlayersByTeamNameReturnsList() {
         mockMvc.perform(get("/team/players")
             .param("name", "Leverkusen")
             .header("Authorization", "Bearer $token"))
@@ -84,7 +84,7 @@ class TeamControllerE2ETest(@Autowired val mockMvc: MockMvc) {
     }
 
     @Test
-    fun `get matches by team name returns list`() {
+    fun getMatchesByTeamNameReturnsList() {
         mockMvc.perform(get("/team/matches")
             .param("name", "Leverkusen")
             .header("Authorization", "Bearer $token"))

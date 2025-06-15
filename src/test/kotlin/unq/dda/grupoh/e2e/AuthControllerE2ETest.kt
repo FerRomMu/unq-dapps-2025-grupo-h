@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Test
 class AuthControllerE2ETest(@Autowired val mockMvc: MockMvc) {
 
     @Test
-    fun `login success returns token`() {
+    fun loginSuccessReturnsToken() {
         val loginJson = """
             {
                 "username": "admin",
@@ -30,7 +30,7 @@ class AuthControllerE2ETest(@Autowired val mockMvc: MockMvc) {
     }
 
     @Test
-    fun `login failure returns unauthorized`() {
+    fun loginFailureReturnsUnauthorized() {
         val loginJson = """
             {
                 "username": "wrong",
@@ -46,7 +46,7 @@ class AuthControllerE2ETest(@Autowired val mockMvc: MockMvc) {
     }
 
     @Test
-    fun `register success returns created`() {
+    fun registerSuccessReturnsCreated() {
         val registerJson = """
             {
                 "username": "newuser",
@@ -62,7 +62,7 @@ class AuthControllerE2ETest(@Autowired val mockMvc: MockMvc) {
     }
 
     @Test
-    fun `register conflict returns conflict`() {
+    fun registerConflictReturnsConflict() {
         val registerJson = """
             {
                 "username": "admin",

@@ -13,7 +13,7 @@ class TeamControllerTest {
     private val controller = TeamController(teamService)
 
     @Test
-    fun `getPlayersByTeam should return player names`() {
+    fun getPlayersByTeamShouldReturnPlayerNames() {
         val team = "Boca"
         val players = listOf("Riquelme", "Palermo")
         `when`(teamService.getPlayersByTeamName(team)).thenReturn(players)
@@ -25,7 +25,7 @@ class TeamControllerTest {
     }
 
     @Test
-    fun `getMatchesByTeam should return matches`() {
+    fun getMatchesByTeamShouldReturnMatches() {
         val team = "River"
         val match = Match(
             id = 1,
@@ -47,7 +47,7 @@ class TeamControllerTest {
     }
 
     @Test
-    fun `getNextMatchesByTeam should return upcoming matches`() {
+    fun getNextMatchesByTeamShouldReturnUpcomingMatches() {
         val team = "Independiente"
         val match = Match(
             id = 2,

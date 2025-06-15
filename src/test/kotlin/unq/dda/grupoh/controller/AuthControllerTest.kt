@@ -16,7 +16,7 @@ class AuthControllerTest {
     private val controller = AuthController(jwtService, userService)
 
     @Test
-    fun `login should return token when credentials are valid`() {
+    fun loginShouldReturnTokenWhenCredentialsAreValid() {
         val username = "fercho"
         val test_pswd = "secreto"
         val token = "fake-jwt-token"
@@ -33,7 +33,7 @@ class AuthControllerTest {
     }
 
     @Test
-    fun `login should return 401 when credentials are invalid`() {
+    fun loginShouldReturn401WhenCredentialsAreInvalid() {
         val username = "fercho"
         val test_pswd = "wrong"
 
@@ -48,7 +48,7 @@ class AuthControllerTest {
     }
 
     @Test
-    fun `register should return 409 when user exists`() {
+    fun registerShouldReturn409whenUserExists() {
         val username = "fercho"
         val test_pswd = "pass123"
 
@@ -63,7 +63,7 @@ class AuthControllerTest {
     }
 
     @Test
-    fun `register should return 201 when user is new`() {
+    fun registerShouldReturn201WhenUserIsNew() {
         val username = "nuevo"
         val test_pswd = "123456"
 
