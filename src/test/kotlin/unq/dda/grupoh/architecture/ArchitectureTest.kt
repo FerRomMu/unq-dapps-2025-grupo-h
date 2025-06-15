@@ -10,6 +10,11 @@ import org.junit.jupiter.api.Test
 
 class ArchitectureTest {
 
+    private val spring = "org.springframework.."
+    private val annotations = "org.jetbrains.annotations.."
+    private val javaStr = "java.."
+    private val kotlinStr = "kotlin.."
+
     private val basePackage = "unq.dda.grupoh"
     private val importedClasses: JavaClasses = ClassFileImporter()
         .withImportOption { location ->
@@ -28,10 +33,10 @@ class ArchitectureTest {
                     "$basePackage.config..",
                     "$basePackage.model..",
                     "$basePackage.dto..",
-                    "org.springframework..",
-                    "org.jetbrains.annotations..",
-                    "java..",
-                    "kotlin..",
+                    spring,
+                    annotations,
+                    javaStr,
+                    kotlinStr,
                     "io.swagger..",
                 )
             )
@@ -49,12 +54,12 @@ class ArchitectureTest {
                     "$basePackage.external..",
                     "$basePackage.model..",
                     "$basePackage.exceptions..",
-                    "java..",
-                    "kotlin..",
+                    javaStr,
+                    kotlinStr,
                     "kotlinx..",
                     "io.jsonwebtoken..",
-                    "org.jetbrains.annotations..",
-                    "org.springframework..",
+                    annotations,
+                    spring,
                     "javax.crypto.."
                 )
             )
@@ -69,10 +74,10 @@ class ArchitectureTest {
                 resideInAnyPackage(
                     "$basePackage.repository..",
                     "$basePackage.model..",
-                    "java..",
-                    "org.springframework.data.jpa.repository..",
-                    "kotlin..",
-                    "org.jetbrains.annotations.."
+                    javaStr,
+                    spring,
+                    kotlinStr,
+                    annotations
                 )
             )
         rule.check(importedClasses)

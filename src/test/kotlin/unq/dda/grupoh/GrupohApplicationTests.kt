@@ -8,6 +8,10 @@ class GrupohApplicationTests {
 
 	@Test
 	fun contextLoads() {
+		"""
+			Empty test to only load the Spring Application.
+			Required for JaCoCo.
+		"""
 	}
 
 }
