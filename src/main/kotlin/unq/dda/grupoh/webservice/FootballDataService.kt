@@ -14,25 +14,46 @@ import java.net.http.HttpClient
 import java.net.http.HttpRequest
 import java.net.http.HttpResponse
 import java.time.Duration
+import org.slf4j.LoggerFactory
 
 @Service
 class FootballDataService(
     @Value("\${football-data-api.token}") private val apiToken: String,
+    @Value("\${logging.webservice.verbose:false}") private val verboseLogging: String,
     private val client: HttpClient = HttpClient.newBuilder().build()
 ) {
 
     private val baseUrl: String = "https://api.football-data.org/v4/"
     private var offset: Int = 0
     private val json = Json { ignoreUnknownKeys = true }
+    private val logger = LoggerFactory.getLogger(FootballDataService::class.java)
 
-    private fun fetch(url: String) = client.send(
-        HttpRequest.newBuilder()
+    private fun fetch(url: String): HttpResponse<String> {
+        val request = HttpRequest.newBuilder()
             .uri(URI.create(url))
             .timeout(Duration.ofSeconds(10))
             .header("X-Auth-Token", apiToken)
-            .build(),
-        HttpResponse.BodyHandlers.ofString()
-    )
+            .build()
+
+        if (verboseLogging.toBoolean()) {
+            logger.info("LOGGER - OUTGOING REQUEST: ${request.method()} ${request.uri()}")
+        }
+
+        val response = client.send(request, HttpResponse.BodyHandlers.ofString())
+
+        if (verboseLogging.toBoolean()) {
+            val rawBody = response.body()
+            val prettyJson = try {
+                Json { prettyPrint = true }.parseToJsonElement(rawBody).toString()
+            } catch (e: Exception) {
+                rawBody
+            }
+
+            logger.info("LOGGER - RESPONSE [${response.statusCode()}]:\nprettyJson")
+        }
+
+        return response
+    }
 
     private fun fetchTeam(teamName: String): List<Team> {
         val fullUrl = baseUrl + "teams"
@@ -56,6 +77,7 @@ class FootballDataService(
             allTeams.addAll(currentTeams)
 
             teamToFind = currentTeams.find { it.name.equals(teamName, ignoreCase = true) }
+            logger.info("Equipo -- $teamToFind")
 
             if (apiResponse.count < limit) {
                 offset = 0
