@@ -35,7 +35,7 @@ import unq.dda.grupoh.dto.footballData.SeasonDTO
 import unq.dda.grupoh.dto.footballData.TeamDetailResponse
 import unq.dda.grupoh.dto.footballData.TeamInfoDTO
 
-class FootballDataServiceTest {
+class FootballDataWebServiceTest {
 
     private val objectMapper = jacksonObjectMapper()
 
@@ -159,7 +159,7 @@ class FootballDataServiceTest {
             )
         ).thenReturn(httpResponsePlayers)
 
-        val service = FootballDataService(
+        val service = FootballDataWebService(
             apiToken = "test-token",
             verboseLogging = "false",
             client = httpClient,
@@ -186,7 +186,7 @@ class FootballDataServiceTest {
         val httpResponse: HttpResponse<String> = mock()
         val logger: Logger = mock()
 
-        val footballDataService = FootballDataService(
+        val footballDataService = FootballDataWebService(
             apiToken = "test-token",
             verboseLogging = "false",
             client = httpClient,
@@ -212,7 +212,7 @@ class FootballDataServiceTest {
         val httpResponse: HttpResponse<String> = mock()
         val logger: Logger = mock()
 
-        val footballDataService = FootballDataService(
+        val footballDataService = FootballDataWebService(
             apiToken = "test-token",
             verboseLogging = "false",
             client = httpClient,
@@ -245,7 +245,7 @@ class FootballDataServiceTest {
         val httpResponse: HttpResponse<String> = mock()
         val logger: Logger = mock()
 
-        val footballDataService = FootballDataService(
+        val footballDataService = FootballDataWebService(
             apiToken = "test-token",
             verboseLogging = "false",
             client = httpClient,
@@ -272,7 +272,7 @@ class FootballDataServiceTest {
         val httpResponse: HttpResponse<String> = mock()
         val logger: Logger = mock()
 
-        val footballDataService = FootballDataService(
+        val footballDataService = FootballDataWebService(
             apiToken = "test-token",
             verboseLogging = "false",
             client = httpClient,
@@ -316,7 +316,7 @@ class FootballDataServiceTest {
         val httpResponse: HttpResponse<String> = mock()
         val logger: Logger = mock()
 
-        val footballDataService = FootballDataService(
+        val footballDataService = FootballDataWebService(
             apiToken = "test-token",
             verboseLogging = "false",
             client = httpClient,
@@ -340,7 +340,7 @@ class FootballDataServiceTest {
         val httpResponse: HttpResponse<String> = mock()
         val logger: Logger = mock()
 
-        val footballDataService = FootballDataService(
+        val footballDataService = FootballDataWebService(
             apiToken = "test-token",
             verboseLogging = "false",
             client = httpClient,

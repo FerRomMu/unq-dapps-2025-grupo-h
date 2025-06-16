@@ -15,7 +15,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
-import unq.dda.grupoh.webservice.FootballDataService
+import unq.dda.grupoh.webservice.FootballDataWebService
 import unq.dda.grupoh.model.Match
 import unq.dda.grupoh.model.Team
 
@@ -24,7 +24,7 @@ import unq.dda.grupoh.model.Team
 class TeamControllerE2ETest(@Autowired val mockMvc: MockMvc) {
 
     @MockitoBean
-    lateinit var footballDataService: FootballDataService
+    lateinit var footballDataService: FootballDataWebService
 
     private var token: String = ""
 
