@@ -15,135 +15,136 @@ import java.net.http.HttpRequest
 import java.net.http.HttpResponse
 import java.time.Duration
 import org.slf4j.LoggerFactory
+import org.slf4j.Logger
 
-<span class="fc" id="L19">@Service</span>
-<span class="fc" id="L20">class FootballDataService(</span>
-<span class="fc" id="L21">    @Value(&quot;\${football-data-api.token}&quot;) private val apiToken: String,</span>
-<span class="fc" id="L22">    @Value(&quot;\${logging.webservice.verbose:false}&quot;) private val verboseLogging: String,</span>
-<span class="fc" id="L23">    private val client: HttpClient = HttpClient.newBuilder().build()</span>
+<span class="fc" id="L20">@Service</span>
+<span class="fc" id="L21">class FootballDataService(</span>
+<span class="fc" id="L22">    @Value(&quot;\${football-data-api.token}&quot;) private val apiToken: String,</span>
+<span class="fc" id="L23">    @Value(&quot;\${logging.webservice.verbose:false}&quot;) private val verboseLogging: String,</span>
+<span class="fc" id="L24">    private val client: HttpClient = HttpClient.newBuilder().build(),</span>
+<span class="fc" id="L25">    private val logger: Logger = LoggerFactory.getLogger(FootballDataService::class.java)</span>
 ) {
 
-<span class="fc" id="L26">    private val baseUrl: String = &quot;https://api.football-data.org/v4/&quot;</span>
+<span class="fc" id="L28">    private val baseUrl: String = &quot;https://api.football-data.org/v4/&quot;</span>
     private var offset: Int = 0
-<span class="fc" id="L28">    private val json = Json { ignoreUnknownKeys = true }</span>
-<span class="fc" id="L29">    private val logger = LoggerFactory.getLogger(FootballDataService::class.java)</span>
+<span class="fc" id="L30">    private val json = Json { ignoreUnknownKeys = true }</span>
 
     private fun fetch(url: String): HttpResponse&lt;String&gt; {
-<span class="nc" id="L32">        val request = HttpRequest.newBuilder()</span>
-<span class="nc" id="L33">            .uri(URI.create(url))</span>
-<span class="nc" id="L34">            .timeout(Duration.ofSeconds(10))</span>
-<span class="nc" id="L35">            .header(&quot;X-Auth-Token&quot;, apiToken)</span>
-<span class="nc" id="L36">            .build()</span>
+<span class="fc" id="L33">        val request = HttpRequest.newBuilder()</span>
+<span class="fc" id="L34">            .uri(URI.create(url))</span>
+<span class="fc" id="L35">            .timeout(Duration.ofSeconds(10))</span>
+<span class="fc" id="L36">            .header(&quot;X-Auth-Token&quot;, apiToken)</span>
+<span class="fc" id="L37">            .build()</span>
 
-<span class="nc bnc" id="L38" title="All 2 branches missed.">        if (verboseLogging.toBoolean()) {</span>
-<span class="nc" id="L39">            logger.info(&quot;LOGGER - OUTGOING REQUEST: ${request.method()} ${request.uri()}&quot;)</span>
+<span class="pc bpc" id="L39" title="1 of 2 branches missed.">        if (verboseLogging.toBoolean()) {</span>
+<span class="nc" id="L40">            logger.info(&quot;LOGGER - OUTGOING REQUEST: ${request.method()} ${request.uri()}&quot;)</span>
         }
 
-<span class="nc" id="L42">        val response = client.send(request, HttpResponse.BodyHandlers.ofString())</span>
+<span class="fc" id="L43">        val response = client.send(request, HttpResponse.BodyHandlers.ofString())</span>
 
-<span class="nc bnc" id="L44" title="All 2 branches missed.">        if (verboseLogging.toBoolean()) {</span>
-<span class="nc" id="L45">            val rawBody = response.body()</span>
-<span class="nc" id="L46">            val prettyJson = try {</span>
-<span class="nc" id="L47">                Json { prettyPrint = true }.parseToJsonElement(rawBody).toString()</span>
-<span class="nc" id="L48">            } catch (e: Exception) {</span>
-<span class="nc" id="L49">                rawBody</span>
+<span class="pc bpc" id="L45" title="1 of 2 branches missed.">        if (verboseLogging.toBoolean()) {</span>
+<span class="nc" id="L46">            val rawBody = response.body()</span>
+<span class="nc" id="L47">            val prettyJson = try {</span>
+<span class="nc" id="L48">                Json { prettyPrint = true }.parseToJsonElement(rawBody).toString()</span>
+<span class="nc" id="L49">            } catch (e: Exception) {</span>
+<span class="nc" id="L50">                rawBody</span>
             }
 
-<span class="nc" id="L52">            logger.info(&quot;LOGGER - RESPONSE [${response.statusCode()}]:\nprettyJson&quot;)</span>
+<span class="nc" id="L53">            logger.info(&quot;LOGGER - RESPONSE [${response.statusCode()}]:\n $prettyJson&quot;)</span>
         }
 
-<span class="nc" id="L55">        return response</span>
+<span class="fc" id="L56">        return response</span>
     }
 
     private fun fetchTeam(teamName: String): List&lt;Team&gt; {
-<span class="nc" id="L59">        val fullUrl = baseUrl + &quot;teams&quot;</span>
-<span class="nc" id="L60">        val limit = 500</span>
+<span class="fc" id="L60">        val fullUrl = baseUrl + &quot;teams&quot;</span>
+<span class="fc" id="L61">        val limit = 500</span>
 
-<span class="nc" id="L62">        val allTeams = mutableListOf&lt;Team&gt;()</span>
-<span class="nc" id="L63">        var teamToFind: Team? = null</span>
+<span class="fc" id="L63">        val allTeams = mutableListOf&lt;Team&gt;()</span>
+<span class="fc" id="L64">        var teamToFind: Team? = null</span>
 
-<span class="nc bnc" id="L65" title="All 2 branches missed.">        while (teamToFind == null) {</span>
-<span class="nc" id="L66">            val response = fetch(&quot;$fullUrl?limit=$limit&amp;offset=$offset&quot;)</span>
+<span class="pc bpc" id="L66" title="1 of 2 branches missed.">        while (teamToFind == null) {</span>
+<span class="fc" id="L67">            val response = fetch(&quot;$fullUrl?limit=$limit&amp;offset=$offset&quot;)</span>
 
-<span class="nc bnc" id="L68" title="All 2 branches missed.">            if (response.statusCode() != 200) {</span>
-<span class="nc" id="L69">                print(&quot;Error at API call: ${response.statusCode()} - ${response.body()}&quot;)</span>
-<span class="nc" id="L70">                break</span>
+<span class="pc bpc" id="L69" title="1 of 2 branches missed.">            if (response.statusCode() != 200) {</span>
+<span class="nc" id="L70">                print(&quot;Error at API call: ${response.statusCode()} - ${response.body()}&quot;)</span>
+<span class="nc" id="L71">                break</span>
             }
 
-<span class="nc" id="L73">            val apiResponse = json.decodeFromString&lt;TeamResponse&gt;(response.body())</span>
-<span class="nc" id="L74">            val currentTeams = apiResponse.teams.map {</span>
-<span class="nc bnc" id="L75" title="All 2 branches missed.">                Team(name = it.shortName ?: it.name!!, apiId = it.id)</span>
+<span class="fc" id="L74">            val apiResponse = json.decodeFromString&lt;TeamResponse&gt;(response.body())</span>
+<span class="fc" id="L75">            val currentTeams = apiResponse.teams.map {</span>
+<span class="pc bpc" id="L76" title="1 of 2 branches missed.">                Team(name = it.shortName ?: it.name!!, apiId = it.id)</span>
             }
-<span class="nc" id="L77">            allTeams.addAll(currentTeams)</span>
+<span class="fc" id="L78">            allTeams.addAll(currentTeams)</span>
 
-<span class="nc bnc" id="L79" title="All 4 branches missed.">            teamToFind = currentTeams.find { it.name.equals(teamName, ignoreCase = true) }</span>
-<span class="nc" id="L80">            logger.info(&quot;Equipo -- $teamToFind&quot;)</span>
+<span class="pc bpc" id="L80" title="1 of 4 branches missed.">            teamToFind = currentTeams.find { it.name.equals(teamName, ignoreCase = true) }</span>
+<span class="fc" id="L81">            logger.info(&quot;Equipo -- $teamToFind&quot;)</span>
 
-<span class="nc bnc" id="L82" title="All 2 branches missed.">            if (apiResponse.count &lt; limit) {</span>
-<span class="nc" id="L83">                offset = 0</span>
-<span class="nc" id="L84">                break</span>
+<span class="pc bpc" id="L83" title="1 of 2 branches missed.">            if (apiResponse.count &lt; limit) {</span>
+<span class="fc" id="L84">                offset = 0</span>
+<span class="fc" id="L85">                break</span>
             }
 
-<span class="nc" id="L87">            offset += limit</span>
+<span class="nc" id="L88">            offset += limit</span>
         }
 
-<span class="nc" id="L90">        return allTeams</span>
+<span class="fc" id="L91">        return allTeams</span>
     }
 
     private fun fetchPlayers(teamId: Int): List&lt;String&gt; {
-<span class="nc" id="L94">        val response = fetch(&quot;$baseUrl/teams/$teamId&quot;)</span>
+<span class="fc" id="L95">        val response = fetch(&quot;$baseUrl/teams/$teamId&quot;)</span>
 
-<span class="nc bnc" id="L96" title="All 2 branches missed.">        if (response.statusCode() != 200) {</span>
-<span class="nc" id="L97">            throw ExternalErrorException(&quot;Error fetching players for team $teamId: ${response.statusCode()} - ${response.body()}&quot;)</span>
+<span class="fc bfc" id="L97" title="All 2 branches covered.">        if (response.statusCode() != 200) {</span>
+<span class="fc" id="L98">            throw ExternalErrorException(&quot;Error fetching players for team $teamId: ${response.statusCode()} - ${response.body()}&quot;)</span>
         }
 
-<span class="nc" id="L100">        val teamDetailResponse = json.decodeFromString&lt;TeamDetailResponse&gt;(response.body())</span>
-<span class="nc bnc" id="L101" title="All 2 branches missed.">        return teamDetailResponse.squad?.map { it.name } ?: emptyList()</span>
+<span class="fc" id="L101">        val teamDetailResponse = json.decodeFromString&lt;TeamDetailResponse&gt;(response.body())</span>
+<span class="pc bpc" id="L102" title="1 of 2 branches missed.">        return teamDetailResponse.squad?.map { it.name } ?: emptyList()</span>
     }
 
     fun fetchMatches(teamName: String, teamId: Int): List&lt;Match&gt; {
-<span class="nc" id="L105">        val response = fetch(&quot;$baseUrl/teams/$teamId/matches&quot;)</span>
+<span class="fc" id="L106">        val response = fetch(&quot;$baseUrl/teams/$teamId/matches&quot;)</span>
 
-<span class="nc bnc" id="L107" title="All 2 branches missed.">        if (response.statusCode() != 200) {</span>
-<span class="nc" id="L108">            throw ExternalErrorException(&quot;Error fetching matches for team $teamId: ${response.statusCode()} - ${response.body()}&quot;)</span>
+<span class="fc bfc" id="L108" title="All 2 branches covered.">        if (response.statusCode() != 200) {</span>
+<span class="fc" id="L109">            throw ExternalErrorException(&quot;Error fetching matches for team $teamId: ${response.statusCode()} - ${response.body()}&quot;)</span>
         }
 
-<span class="nc" id="L111">        val matchesResponse = json.decodeFromString&lt;MatchesResponse&gt;(response.body())</span>
+<span class="fc" id="L112">        val matchesResponse = json.decodeFromString&lt;MatchesResponse&gt;(response.body())</span>
 
-<span class="nc" id="L113">        return matchesResponse.matches.map {</span>
-<span class="nc" id="L114">            Match(</span>
-<span class="nc" id="L115">                id = it.id,</span>
-<span class="nc" id="L116">                date = it.utcDate,</span>
-<span class="nc" id="L117">                status = it.status,</span>
-<span class="nc" id="L118">                stage = it.stage,</span>
-<span class="nc" id="L119">                homeTeam = it.homeTeam.name,</span>
-<span class="nc" id="L120">                awayTeam = it.awayTeam.name,</span>
-<span class="nc" id="L121">                scoreHome = it.score.fullTime.home,</span>
-<span class="nc" id="L122">                scoreAway = it.score.fullTime.away,</span>
-<span class="nc" id="L123">                winner = it.score.winner</span>
+<span class="fc" id="L114">        return matchesResponse.matches.map {</span>
+<span class="fc" id="L115">            Match(</span>
+<span class="fc" id="L116">                id = it.id,</span>
+<span class="fc" id="L117">                date = it.utcDate,</span>
+<span class="fc" id="L118">                status = it.status,</span>
+<span class="fc" id="L119">                stage = it.stage,</span>
+<span class="fc" id="L120">                homeTeam = it.homeTeam.name,</span>
+<span class="fc" id="L121">                awayTeam = it.awayTeam.name,</span>
+<span class="fc" id="L122">                scoreHome = it.score.fullTime.home,</span>
+<span class="fc" id="L123">                scoreAway = it.score.fullTime.away,</span>
+<span class="fc" id="L124">                winner = it.score.winner</span>
             )
         }
     }
 
     fun findTeamByName(teamName: String): Pair&lt;Team?, List&lt;Team&gt;&gt; {
-<span class="nc" id="L129">        val allTeams = fetchTeam(teamName)</span>
-<span class="nc bnc" id="L130" title="All 4 branches missed.">        var team = allTeams.find { it.name.equals(teamName, ignoreCase = true) }</span>
-<span class="nc bnc" id="L131" title="All 2 branches missed.">        if(team != null) {</span>
-<span class="nc" id="L132">            val players = fetchPlayers(team.apiId)</span>
-<span class="nc" id="L133">            team = team.copy(players = players)</span>
+<span class="fc" id="L130">        val allTeams = fetchTeam(teamName)</span>
+<span class="pc bpc" id="L131" title="1 of 4 branches missed.">        var team = allTeams.find { it.name.equals(teamName, ignoreCase = true) }</span>
+<span class="fc bfc" id="L132" title="All 2 branches covered.">        if(team != null) {</span>
+<span class="fc" id="L133">            val players = fetchPlayers(team.apiId)</span>
+<span class="fc" id="L134">            team = team.copy(players = players)</span>
         }
-<span class="nc" id="L135">        return Pair(team, allTeams)</span>
+<span class="fc" id="L136">        return Pair(team, allTeams)</span>
     }
 
     fun findTeamById(apiId: Int, name: String): Team =
-<span class="nc" id="L139">        Team(</span>
-<span class="nc" id="L140">            null,</span>
-<span class="nc" id="L141">            name,</span>
-<span class="nc" id="L142">            apiId,</span>
-<span class="nc" id="L143">            fetchPlayers(apiId)</span>
-<span class="nc" id="L144">        )</span>
+<span class="fc" id="L140">        Team(</span>
+<span class="fc" id="L141">            null,</span>
+<span class="fc" id="L142">            name,</span>
+<span class="fc" id="L143">            apiId,</span>
+<span class="fc" id="L144">            fetchPlayers(apiId)</span>
+<span class="fc" id="L145">        )</span>
 
     fun findMatchesByTeam(team: Team): List&lt;Match&gt; =
-<span class="nc" id="L147">        fetchMatches(team.name, team.apiId)</span>
-<span class="fc" id="L148">}</span>
+<span class="fc" id="L148">        fetchMatches(team.name, team.apiId)</span>
+<span class="fc" id="L149">}</span>
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>
