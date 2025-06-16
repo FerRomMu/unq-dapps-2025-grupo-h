@@ -15,18 +15,19 @@ import java.net.http.HttpRequest
 import java.net.http.HttpResponse
 import java.time.Duration
 import org.slf4j.LoggerFactory
+import org.slf4j.Logger
 
 @Service
 class FootballDataService(
     @Value("\${football-data-api.token}") private val apiToken: String,
     @Value("\${logging.webservice.verbose:false}") private val verboseLogging: String,
-    private val client: HttpClient = HttpClient.newBuilder().build()
+    private val client: HttpClient = HttpClient.newBuilder().build(),
+    private val logger: Logger = LoggerFactory.getLogger(FootballDataService::class.java)
 ) {
 
     private val baseUrl: String = "https://api.football-data.org/v4/"
     private var offset: Int = 0
     private val json = Json { ignoreUnknownKeys = true }
-    private val logger = LoggerFactory.getLogger(FootballDataService::class.java)
 
     private fun fetch(url: String): HttpResponse<String> {
         val request = HttpRequest.newBuilder()
@@ -49,7 +50,7 @@ class FootballDataService(
                 rawBody
             }
 
-            logger.info("LOGGER - RESPONSE [${response.statusCode()}]:\nprettyJson")
+            logger.info("LOGGER - RESPONSE [${response.statusCode()}]:\n $prettyJson")
         }
 
         return response
