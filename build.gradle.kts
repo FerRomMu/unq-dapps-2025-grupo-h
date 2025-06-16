@@ -164,7 +164,9 @@ tasks.jacocoTestReport {
 				exclude(
 					"unq/dda/grupoh/GrupohApplication.class",
 					"unq/dda/grupoh/GrupohApplicationKt.class",
-					"unq/dda/grupoh/dto/**"
+					"unq/dda/grupoh/dto/**",
+					"unq/dda/grupoh/config/aop/**",
+					"unq/dda/grupoh/config/GlobalExceptionHandler.class"
 				)
 			}
 		})

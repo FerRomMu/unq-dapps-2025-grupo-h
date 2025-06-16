@@ -1,5 +1,6 @@
 package unq.dda.grupoh.service
 
+import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Test
@@ -150,5 +151,20 @@ class TeamServiceTest {
         assertEquals(listOf(matchNotPlayed), result)
         verify(teamRepository).findByName(teamName)
         verify(footballDataService).findMatchesByTeam(team)
+    }
+
+    @Test
+    fun `getPlayersByTeamName does not fetch from FootballDataService if team already has players`() {
+        val teamName = "TeamJ"
+        val players = listOf("playerX", "playerY")
+        val team = Team(name = teamName, apiId = 10, players = players)
+        whenever(teamRepository.findByName(teamName)).thenReturn(team)
+
+        val result = teamService.getPlayersByTeamName(teamName)
+
+        assertEquals(players, result)
+        verify(teamRepository).findByName(teamName)
+        verifyNoInteractions(footballDataService) // This ensures the branch is not taken
+        verifyNoMoreInteractions(teamRepository) // To ensure saveOrUpdateByName is not called
     }
 }
