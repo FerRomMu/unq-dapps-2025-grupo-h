@@ -4,16 +4,26 @@ import jakarta.persistence.Entity
 import jakarta.persistence.Id
 import jakarta.persistence.Table
 
-<span class="nc" id="L7">@Entity</span>
+<span class="fc" id="L7">@Entity</span>
 @Table(name = &quot;players&quot;)
-<span class="nc" id="L9">data class Player(</span>
-<span class="nc" id="L10">    @Id</span>
-<span class="nc" id="L11">    val id: Int,</span>
-<span class="nc" id="L12">    val name: String,</span>
-<span class="nc" id="L13">    val position: String,</span>
-<span class="nc" id="L14">    val dateOfBirth: String,</span>
-<span class="nc" id="L15">    val nationality: String,</span>
-<span class="nc" id="L16">    val shirtNumber: Int,</span>
-<span class="nc" id="L17">    val marketValue: Int</span>
-)
+<span class="pc" id="L9">data class Player(</span>
+<span class="fc" id="L10">    val name: String,</span>
+<span class="pc" id="L11">    val age: Int?,</span>
+<span class="pc" id="L12">    val position: String?,</span>
+<span class="pc" id="L13">    val heightCm: Int?,</span>
+<span class="pc" id="L14">    val weightKg: Int?,</span>
+<span class="pc" id="L15">    val matchesPlayed: Int?,</span>
+<span class="pc" id="L16">    val minutesPlayed: Int?,</span>
+<span class="pc" id="L17">    val goals: Int?,</span>
+<span class="pc" id="L18">    val assists: Int?,</span>
+<span class="pc" id="L19">    val yellowCards: Int?,</span>
+<span class="pc" id="L20">    val redCards: Int?,</span>
+<span class="pc" id="L21">    val shotsPerGame: Double?,</span>
+<span class="pc" id="L22">    val passSuccessPercentage: Double?,</span>
+<span class="pc" id="L23">    val aerialsWonPerGame: Double?,</span>
+<span class="pc" id="L24">    val manOfTheMatch: Int?,</span>
+<span class="pc" id="L25">    val rating: Double?,</span>
+<span class="fc" id="L26">    @Id</span>
+<span class="nc" id="L27">    val id: Int? = null</span>
+<span class="nc" id="L28">)</span>
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>
