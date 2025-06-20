@@ -8,11 +8,13 @@ import unq.dda.grupoh.webservice.FootballDataWebService
 import unq.dda.grupoh.model.Match
 import unq.dda.grupoh.model.Team
 import unq.dda.grupoh.repository.TeamRepository
+import unq.dda.grupoh.webservice.WhoScoreWebService
 
 @Service
 class TeamService(
     private val teamRepository: TeamRepository,
-    private val footballDataService: FootballDataWebService
+    private val footballDataService: FootballDataWebService,
+    private val whoScoreWebService: WhoScoreWebService
 ) {
 
     @Transactional
@@ -39,7 +41,7 @@ class TeamService(
         var team = getTeam(teamName)
 
         if (team.players.isEmpty()) {
-            team = runBlocking { footballDataService.findTeamById(team.apiId, team.name) }
+            team.players = whoScoreWebService.findPlayersByTeamName(teamName).map { it.name }
             saveOrUpdateByName(team)
         }
 

@@ -7,14 +7,17 @@ import org.mockito.kotlin.*
 import unq.dda.grupoh.exceptions.ResourceNotFoundException
 import unq.dda.grupoh.webservice.FootballDataWebService
 import unq.dda.grupoh.model.Match
+import unq.dda.grupoh.model.Player
 import unq.dda.grupoh.model.Team
 import unq.dda.grupoh.repository.TeamRepository
+import unq.dda.grupoh.webservice.WhoScoreWebService
 
 class TeamServiceTest {
 
     private val teamRepository: TeamRepository = mock()
     private val footballDataService: FootballDataWebService = mock()
-    private val teamService = TeamService(teamRepository, footballDataService)
+    private val whoScoreWebService: WhoScoreWebService = mock()
+    private val teamService = TeamService(teamRepository, footballDataService, whoScoreWebService)
 
     @Test
     fun getTeamReturnsTeamFromRepositoryIfFound() {
@@ -101,13 +104,54 @@ class TeamServiceTest {
         val wantedTeam = Team(teamId = 1, name = teamName, apiId = 7, players = listOf("playerA", "playerB"))
 
         whenever(teamRepository.findByName(teamName)).thenReturn(emptyTeam)
-        whenever(footballDataService.findTeamById(7, teamName)).thenReturn(fetchedTeam)
         whenever(teamRepository.save(wantedTeam)).thenReturn(wantedTeam)
+        whenever(whoScoreWebService.findPlayersByTeamName(teamName)).thenReturn(
+            listOf(
+                Player(
+                    name = "playerA",
+                    age = 25,
+                    position = "Forward",
+                    heightCm = 180,
+                    weightKg = 75,
+                    matchesPlayed = 10,
+                    minutesPlayed = 800,
+                    goals = 5,
+                    assists = 2,
+                    yellowCards = 1,
+                    redCards = 0,
+                    shotsPerGame = 3.5,
+                    passSuccessPercentage = 82.0,
+                    aerialsWonPerGame = 1.2,
+                    manOfTheMatch = 1,
+                    rating = 7.8,
+                    id = 1
+                ),
+                Player(
+                    name = "playerB",
+                    age = 27,
+                    position = "Midfielder",
+                    heightCm = 175,
+                    weightKg = 70,
+                    matchesPlayed = 12,
+                    minutesPlayed = 950,
+                    goals = 2,
+                    assists = 4,
+                    yellowCards = 2,
+                    redCards = 0,
+                    shotsPerGame = 1.1,
+                    passSuccessPercentage = 88.5,
+                    aerialsWonPerGame = 0.9,
+                    manOfTheMatch = 0,
+                    rating = 7.2,
+                    id = 2
+                )
+            )
+        )
 
         val result = teamService.getPlayersByTeamName(teamName)
 
         assertEquals(fetchedTeam.players, result)
-        verify(footballDataService).findTeamById(7, teamName)
+        verify(whoScoreWebService).findPlayersByTeamName(teamName)
         verify(teamRepository).save(wantedTeam)
     }
 

@@ -7,12 +7,22 @@ import jakarta.persistence.Table
 @Entity
 @Table(name = "players")
 data class Player(
-    @Id
-    val id: Int,
     val name: String,
-    val position: String,
-    val dateOfBirth: String,
-    val nationality: String,
-    val shirtNumber: Int,
-    val marketValue: Int
+    val age: Int?,
+    val position: String?,
+    val heightCm: Int?,
+    val weightKg: Int?,
+    val matchesPlayed: Int?,
+    val minutesPlayed: Int?,
+    val goals: Int?,
+    val assists: Int?,
+    val yellowCards: Int?,
+    val redCards: Int?,
+    val shotsPerGame: Double?,
+    val passSuccessPercentage: Double?,
+    val aerialsWonPerGame: Double?,
+    val manOfTheMatch: Int?,
+    val rating: Double?,
+    @Id
+    val id: Int? = null
 )
