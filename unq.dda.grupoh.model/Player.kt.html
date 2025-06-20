@@ -1,29 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Player.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">grupoh</a> &gt; <a href="index.source.html" class="el_package">unq.dda.grupoh.model</a> &gt; <span class="el_source">Player.kt</span></div><h1>Player.kt</h1><pre class="source lang-java linenums">package unq.dda.grupoh.model
 
 import jakarta.persistence.Entity
+import jakarta.persistence.GeneratedValue
+import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.Table
+import jakarta.persistence.UniqueConstraint
 
-<span class="fc" id="L7">@Entity</span>
-@Table(name = &quot;players&quot;)
-<span class="pc" id="L9">data class Player(</span>
-<span class="fc" id="L10">    val name: String,</span>
-<span class="pc" id="L11">    val age: Int?,</span>
-<span class="pc" id="L12">    val position: String?,</span>
-<span class="pc" id="L13">    val heightCm: Int?,</span>
-<span class="pc" id="L14">    val weightKg: Int?,</span>
-<span class="pc" id="L15">    val matchesPlayed: Int?,</span>
-<span class="pc" id="L16">    val minutesPlayed: Int?,</span>
-<span class="pc" id="L17">    val goals: Int?,</span>
-<span class="pc" id="L18">    val assists: Int?,</span>
-<span class="pc" id="L19">    val yellowCards: Int?,</span>
-<span class="pc" id="L20">    val redCards: Int?,</span>
-<span class="pc" id="L21">    val shotsPerGame: Double?,</span>
-<span class="pc" id="L22">    val passSuccessPercentage: Double?,</span>
-<span class="pc" id="L23">    val aerialsWonPerGame: Double?,</span>
-<span class="pc" id="L24">    val manOfTheMatch: Int?,</span>
-<span class="pc" id="L25">    val rating: Double?,</span>
-<span class="fc" id="L26">    @Id</span>
-<span class="nc" id="L27">    val id: Int? = null</span>
-<span class="nc" id="L28">)</span>
+<span class="fc" id="L10">@Entity</span>
+@Table(name = &quot;players&quot;, uniqueConstraints = [UniqueConstraint(columnNames = [&quot;name&quot;, &quot;team_name&quot;])])
+<span class="pc" id="L12">data class Player(</span>
+<span class="fc" id="L13">    val name: String,</span>
+<span class="pc" id="L14">    val teamName: String,</span>
+<span class="pc" id="L15">    val age: Int?,</span>
+<span class="pc" id="L16">    val position: String?,</span>
+<span class="pc" id="L17">    val heightCm: Int?,</span>
+<span class="pc" id="L18">    val weightKg: Int?,</span>
+<span class="pc" id="L19">    val matchesPlayed: Int?,</span>
+<span class="pc" id="L20">    val minutesPlayed: Int?,</span>
+<span class="pc" id="L21">    val goals: Int?,</span>
+<span class="pc" id="L22">    val assists: Int?,</span>
+<span class="pc" id="L23">    val yellowCards: Int?,</span>
+<span class="pc" id="L24">    val redCards: Int?,</span>
+<span class="pc" id="L25">    val shotsPerGame: Double?,</span>
+<span class="pc" id="L26">    val passSuccessPercentage: Double?,</span>
+<span class="pc" id="L27">    val aerialsWonPerGame: Double?,</span>
+<span class="pc" id="L28">    val manOfTheMatch: Int?,</span>
+<span class="pc" id="L29">    val rating: Double?,</span>
+<span class="fc" id="L30">    @Id</span>
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+<span class="nc" id="L32">    val id: Int? = null</span>
+<span class="nc" id="L33">)</span>
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>
