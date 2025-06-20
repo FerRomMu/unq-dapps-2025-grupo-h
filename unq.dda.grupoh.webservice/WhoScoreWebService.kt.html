@@ -27,103 +27,103 @@ import java.time.Duration
     ) {
 
     private fun extractPlayerFromRow(row: WebElement, teamName: String): Player {
-<span class="nc" id="L30">        val nameElement = row.findElement(By.cssSelector(&quot;td.grid-abs a.player-link span.iconize&quot;))</span>
-<span class="nc" id="L31">        val playerName = nameElement.text.trim()</span>
+<span class="fc" id="L30">        val nameElement = row.findElement(By.cssSelector(&quot;td.grid-abs a.player-link span.iconize&quot;))</span>
+<span class="fc" id="L31">        val playerName = nameElement.text.trim()</span>
 
-<span class="nc" id="L33">        val playerDataSpans = row.findElements(By.cssSelector(&quot;td.grid-abs span.player-meta-data&quot;))</span>
-<span class="nc bnc" id="L34" title="All 4 branches missed.">        val age = playerDataSpans.getOrNull(0)?.text?.toIntOrNull()</span>
-<span class="nc bnc" id="L35" title="All 4 branches missed.">        val detailedPosition = playerDataSpans.getOrNull(1)?.text?.trim()</span>
+<span class="fc" id="L33">        val playerDataSpans = row.findElements(By.cssSelector(&quot;td.grid-abs span.player-meta-data&quot;))</span>
+<span class="pc bpc" id="L34" title="3 of 4 branches missed.">        val age = playerDataSpans.getOrNull(0)?.text?.toIntOrNull()</span>
+<span class="pc bpc" id="L35" title="3 of 4 branches missed.">        val detailedPosition = playerDataSpans.getOrNull(1)?.text?.trim()</span>
 
-<span class="nc" id="L37">        val heightCm = row.findElement(By.xpath(&quot;./td[3]&quot;)).text.toIntOrNull() // CM</span>
-<span class="nc" id="L38">        val weightKg = row.findElement(By.xpath(&quot;./td[4]&quot;)).text.toIntOrNull() // KG</span>
-<span class="nc" id="L39">        val matchesPlayed = row.findElement(By.xpath(&quot;./td[5]&quot;)).text.toIntOrNull() // Jgdos</span>
-<span class="nc" id="L40">        val minutesPlayed = row.findElement(By.cssSelector(&quot;td.minsPlayed&quot;)).text.toIntOrNull() // Mins</span>
-<span class="nc" id="L41">        val goals = row.findElement(By.cssSelector(&quot;td.goal&quot;)).text.toIntOrNull() // Goles</span>
-<span class="nc" id="L42">        val assists = row.findElement(By.cssSelector(&quot;td.assistTotal&quot;)).text.toIntOrNull() // Asist</span>
-<span class="nc" id="L43">        val yellowCards = row.findElement(By.cssSelector(&quot;td.yellowCard&quot;)).text.toIntOrNull() // Amar</span>
-<span class="nc" id="L44">        val redCards = row.findElement(By.cssSelector(&quot;td.redCard&quot;)).text.toIntOrNull() // Roja</span>
-<span class="nc" id="L45">        val shotsPerGame = row.findElement(By.cssSelector(&quot;td.shotsPerGame&quot;)).text.toDoubleOrNull() // TpP</span>
-<span class="nc" id="L46">        val passSuccessPercentage = row.findElement(By.cssSelector(&quot;td.passSuccess&quot;)).text.toDoubleOrNull() // AP%</span>
-<span class="nc" id="L47">        val aerialsWonPerGame = row.findElement(By.cssSelector(&quot;td.aerialWonPerGame&quot;)).text.toDoubleOrNull() // Aéreos</span>
-<span class="nc" id="L48">        val manOfTheMatch = row.findElement(By.cssSelector(&quot;td.manOfTheMatch&quot;)).text.toIntOrNull() // JdelP</span>
-<span class="nc" id="L49">        val rating = row.findElement(By.cssSelector(&quot;td.rating&quot;)).text.toDoubleOrNull() // Rating</span>
+<span class="fc" id="L37">        val heightCm = row.findElement(By.xpath(&quot;./td[3]&quot;)).text.toIntOrNull() // CM</span>
+<span class="fc" id="L38">        val weightKg = row.findElement(By.xpath(&quot;./td[4]&quot;)).text.toIntOrNull() // KG</span>
+<span class="fc" id="L39">        val matchesPlayed = row.findElement(By.xpath(&quot;./td[5]&quot;)).text.toIntOrNull() // Jgdos</span>
+<span class="fc" id="L40">        val minutesPlayed = row.findElement(By.cssSelector(&quot;td.minsPlayed&quot;)).text.toIntOrNull() // Mins</span>
+<span class="fc" id="L41">        val goals = row.findElement(By.cssSelector(&quot;td.goal&quot;)).text.toIntOrNull() // Goles</span>
+<span class="fc" id="L42">        val assists = row.findElement(By.cssSelector(&quot;td.assistTotal&quot;)).text.toIntOrNull() // Asist</span>
+<span class="fc" id="L43">        val yellowCards = row.findElement(By.cssSelector(&quot;td.yellowCard&quot;)).text.toIntOrNull() // Amar</span>
+<span class="fc" id="L44">        val redCards = row.findElement(By.cssSelector(&quot;td.redCard&quot;)).text.toIntOrNull() // Roja</span>
+<span class="fc" id="L45">        val shotsPerGame = row.findElement(By.cssSelector(&quot;td.shotsPerGame&quot;)).text.toDoubleOrNull() // TpP</span>
+<span class="fc" id="L46">        val passSuccessPercentage = row.findElement(By.cssSelector(&quot;td.passSuccess&quot;)).text.toDoubleOrNull() // AP%</span>
+<span class="fc" id="L47">        val aerialsWonPerGame = row.findElement(By.cssSelector(&quot;td.aerialWonPerGame&quot;)).text.toDoubleOrNull() // Aéreos</span>
+<span class="fc" id="L48">        val manOfTheMatch = row.findElement(By.cssSelector(&quot;td.manOfTheMatch&quot;)).text.toIntOrNull() // JdelP</span>
+<span class="fc" id="L49">        val rating = row.findElement(By.cssSelector(&quot;td.rating&quot;)).text.toDoubleOrNull() // Rating</span>
 
-<span class="nc" id="L51">        return Player(</span>
-<span class="nc" id="L52">            name = playerName,</span>
-<span class="nc" id="L53">            teamName = teamName,</span>
-<span class="nc" id="L54">            age = age,</span>
-<span class="nc" id="L55">            position = detailedPosition,</span>
-<span class="nc" id="L56">            heightCm = heightCm,</span>
-<span class="nc" id="L57">            weightKg = weightKg,</span>
-<span class="nc" id="L58">            matchesPlayed = matchesPlayed,</span>
-<span class="nc" id="L59">            minutesPlayed = minutesPlayed,</span>
-<span class="nc" id="L60">            goals = goals,</span>
-<span class="nc" id="L61">            assists = assists,</span>
-<span class="nc" id="L62">            yellowCards = yellowCards,</span>
-<span class="nc" id="L63">            redCards = redCards,</span>
-<span class="nc" id="L64">            shotsPerGame = shotsPerGame,</span>
-<span class="nc" id="L65">            passSuccessPercentage = passSuccessPercentage,</span>
-<span class="nc" id="L66">            aerialsWonPerGame = aerialsWonPerGame,</span>
-<span class="nc" id="L67">            manOfTheMatch = manOfTheMatch,</span>
-<span class="nc" id="L68">            rating = rating</span>
+<span class="fc" id="L51">        return Player(</span>
+<span class="fc" id="L52">            name = playerName,</span>
+<span class="fc" id="L53">            teamName = teamName,</span>
+<span class="fc" id="L54">            age = age,</span>
+<span class="fc" id="L55">            position = detailedPosition,</span>
+<span class="fc" id="L56">            heightCm = heightCm,</span>
+<span class="fc" id="L57">            weightKg = weightKg,</span>
+<span class="fc" id="L58">            matchesPlayed = matchesPlayed,</span>
+<span class="fc" id="L59">            minutesPlayed = minutesPlayed,</span>
+<span class="fc" id="L60">            goals = goals,</span>
+<span class="fc" id="L61">            assists = assists,</span>
+<span class="fc" id="L62">            yellowCards = yellowCards,</span>
+<span class="fc" id="L63">            redCards = redCards,</span>
+<span class="fc" id="L64">            shotsPerGame = shotsPerGame,</span>
+<span class="fc" id="L65">            passSuccessPercentage = passSuccessPercentage,</span>
+<span class="fc" id="L66">            aerialsWonPerGame = aerialsWonPerGame,</span>
+<span class="fc" id="L67">            manOfTheMatch = manOfTheMatch,</span>
+<span class="fc" id="L68">            rating = rating</span>
         )
     }
 
     private fun findTeamUrl(teamName: String): String {
-<span class="nc" id="L73">        val searchUrl = &quot;https://es.whoscored.com/search/?t=${teamName.replace(&quot; &quot;, &quot;+&quot;)}&quot;</span>
-<span class="nc" id="L74">        driver.get(searchUrl)</span>
+<span class="fc" id="L73">        val searchUrl = &quot;https://es.whoscored.com/search/?t=${teamName.replace(&quot; &quot;, &quot;+&quot;)}&quot;</span>
+<span class="fc" id="L74">        driver.get(searchUrl)</span>
 
-<span class="nc" id="L76">        val wait = WebDriverWait(driver, Duration.ofSeconds(5))</span>
+<span class="fc" id="L76">        val wait = WebDriverWait(driver, Duration.ofSeconds(5))</span>
 
-<span class="nc" id="L78">        val teamLink: WebElement? = try {</span>
-<span class="nc" id="L79">            wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(&quot;.search-result table tbody tr:nth-of-type(2) td a&quot;)))</span>
-<span class="nc" id="L80">            driver.findElement(By.cssSelector(&quot;.search-result table tbody tr:nth-of-type(2) td a&quot;))</span>
+<span class="fc" id="L78">        val teamLink: WebElement? = try {</span>
+<span class="fc" id="L79">            wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(&quot;.search-result table tbody tr:nth-of-type(2) td a&quot;)))</span>
+<span class="fc" id="L80">            driver.findElement(By.cssSelector(&quot;.search-result table tbody tr:nth-of-type(2) td a&quot;))</span>
 <span class="nc" id="L81">        } catch (e: Exception) {</span>
 <span class="nc" id="L82">            throw ResourceNotFoundException(&quot;No se encontró el equipo '$teamName' o su URL en los resultados de búsqueda.&quot;)</span>
         }
 
-<span class="nc bnc" id="L85" title="All 2 branches missed.">        val fullTeamUrl = teamLink?.getAttribute(&quot;href&quot;)</span>
+<span class="pc bpc" id="L85" title="1 of 2 branches missed.">        val fullTeamUrl = teamLink?.getAttribute(&quot;href&quot;)</span>
 
-<span class="nc bnc" id="L87" title="All 6 branches missed.">        if (fullTeamUrl.isNullOrEmpty()) {</span>
+<span class="pc bpc" id="L87" title="3 of 6 branches missed.">        if (fullTeamUrl.isNullOrEmpty()) {</span>
 <span class="nc" id="L88">            throw ResourceNotFoundException(&quot;No se encontró el equipo '$teamName' o su URL en los resultados de búsqueda.&quot;)</span>
         }
 
-<span class="nc bnc" id="L91" title="All 2 branches missed.">        return if (fullTeamUrl.startsWith(&quot;http&quot;)) {</span>
-<span class="nc" id="L92">            fullTeamUrl</span>
+<span class="pc bpc" id="L91" title="1 of 2 branches missed.">        return if (fullTeamUrl.startsWith(&quot;http&quot;)) {</span>
+<span class="fc" id="L92">            fullTeamUrl</span>
         } else {
 <span class="nc" id="L94">            &quot;https://es.whoscored.com$fullTeamUrl&quot;</span>
         }
     }
 
     fun findPlayersByTeamName(name: String): List&lt;Player&gt; {
-<span class="nc" id="L99">        val teamUrl = findTeamUrl(name)</span>
-<span class="nc" id="L100">        driver.get(teamUrl)</span>
+<span class="fc" id="L99">        val teamUrl = findTeamUrl(name)</span>
+<span class="fc" id="L100">        driver.get(teamUrl)</span>
 
-<span class="nc" id="L102">        val players = mutableListOf&lt;Player&gt;()</span>
-<span class="nc" id="L103">        val wait = WebDriverWait(driver, Duration.ofSeconds(10))</span>
+<span class="fc" id="L102">        val players = mutableListOf&lt;Player&gt;()</span>
+<span class="fc" id="L103">        val wait = WebDriverWait(driver, Duration.ofSeconds(10))</span>
 
-<span class="nc" id="L105">        try {</span>
-<span class="nc" id="L106">            wait.until(ExpectedConditions.presenceOfElementLocated(By.id(&quot;player-table-statistics-body&quot;)))</span>
+<span class="fc" id="L105">        try {</span>
+<span class="fc" id="L106">            wait.until(ExpectedConditions.presenceOfElementLocated(By.id(&quot;player-table-statistics-body&quot;)))</span>
 
-<span class="nc" id="L108">            val playerRows = driver.findElements(By.cssSelector(&quot;#player-table-statistics-body tr&quot;))</span>
+<span class="fc" id="L108">            val playerRows = driver.findElements(By.cssSelector(&quot;#player-table-statistics-body tr&quot;))</span>
 
-<span class="nc bnc" id="L110" title="All 2 branches missed.">            if (playerRows.isEmpty()) {</span>
+<span class="pc bpc" id="L110" title="1 of 2 branches missed.">            if (playerRows.isEmpty()) {</span>
 <span class="nc" id="L111">                throw ResourceNotFoundException(&quot;No se encontraron jugadores en la tabla.&quot;)</span>
             }
 
-<span class="nc bnc" id="L114" title="All 2 branches missed.">            for (row in playerRows) {</span>
-<span class="nc" id="L115">                try {</span>
-<span class="nc" id="L116">                    val player = extractPlayerFromRow(row, name)</span>
-<span class="nc" id="L117">                    players.add(player)</span>
+<span class="fc bfc" id="L114" title="All 2 branches covered.">            for (row in playerRows) {</span>
+<span class="fc" id="L115">                try {</span>
+<span class="fc" id="L116">                    val player = extractPlayerFromRow(row, name)</span>
+<span class="fc" id="L117">                    players.add(player)</span>
 <span class="nc" id="L118">                } catch (e: Exception) {</span>
 <span class="nc" id="L119">                    throw ResourceNotFoundException(&quot;Error al procesar la fila de un jugador: ${e.message}. Fila: ${row.text.substring(0, Math.min(row.text.length, 100))}...&quot;)</span>
                 }
             }
-<span class="nc" id="L122">        } catch (e: Exception) {</span>
-<span class="nc" id="L123">            throw ResourceNotFoundException(&quot;No se pudo cargar la tabla de jugadores para el equipo. Error: ${e.message}&quot;)</span>
+<span class="fc" id="L122">        } catch (e: Exception) {</span>
+<span class="fc" id="L123">            throw ResourceNotFoundException(&quot;No se pudo cargar la tabla de jugadores para el equipo. Error: ${e.message}&quot;)</span>
         }
 
-<span class="nc" id="L126">        return players</span>
+<span class="fc" id="L126">        return players</span>
     }
 <span class="fc" id="L128">}</span>
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>
