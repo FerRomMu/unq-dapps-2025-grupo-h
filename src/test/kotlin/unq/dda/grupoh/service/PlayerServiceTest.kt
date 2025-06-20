@@ -26,6 +26,9 @@ class PlayerServiceTest {
     val playera = "Player A"
     val playerb = "Player B"
     val playerc = "Player C"
+    val testPlayer = "Test Player"
+    val testTeam = "Test Team"
+    val exceptionMessage = "No hay jugador NonExistent en equipo Team"
 
     @BeforeEach
     fun setUp() {
@@ -118,7 +121,7 @@ class PlayerServiceTest {
             playerService.getPlayer(teamstr, "NonExistent")
         }
 
-        assertEquals("No hay jugador NonExistent en equipo Team", exception.message)
+        assertEquals(exceptionMessage, exception.message)
         verify(whoScoreWebService).findPlayersByTeamName(teamstr)
         verify(playerRepository).saveAll(listOf(otherPlayer))
     }
@@ -136,7 +139,7 @@ class PlayerServiceTest {
             playerService.getPlayer(teamstr, "NonExistent")
         }
 
-        assertEquals("No hay jugador NonExistent en equipo Team", exception.message)
+        assertEquals(exceptionMessage, exception.message)
         verify(whoScoreWebService).findPlayersByTeamName(teamstr)
         verify(playerRepository).saveAll(emptyList())
     }
@@ -145,8 +148,8 @@ class PlayerServiceTest {
     fun playerPerfomanceShouldCalculateCorrectlyWithFullData() {
         val player = Player(
             id = 1,
-            name = "Test Player",
-            teamName = "Test Team",
+            name = testPlayer,
+            teamName = testTeam,
             matchesPlayed = 20,
             goals = 10,
             assists = 5,
@@ -156,13 +159,13 @@ class PlayerServiceTest {
             aerialsWonPerGame = 1.8,
             rating = 7.5
         )
-        whenever(playerRepository.findByNameAndTeamName("Test Player", "Test Team"))
+        whenever(playerRepository.findByNameAndTeamName(testPlayer, testTeam))
             .thenReturn(player)
 
-        val performance = playerService.playerPerfomance("Test Team", "Test Player")
+        val performance = playerService.playerPerfomance(testTeam, testPlayer)
 
-        assertEquals("Test Player", performance.playerName)
-        assertEquals("Test Team", performance.teamName)
+        assertEquals(testPlayer, performance.playerName)
+        assertEquals(testTeam, performance.teamName)
         assertEquals(0.5, performance.goalsPerGame, 0.001) // 10/20
         assertEquals(0.25, performance.assistsPerGame, 0.001) // 5/20
         assertEquals(0.15, performance.cardsPerGame, 0.001) // (2+1)/20 = 3/20
@@ -170,7 +173,7 @@ class PlayerServiceTest {
         assertEquals(1.8, performance.aerialsWonPerGame, 0.001)
         assertEquals(7.5, performance.rating, 0.001)
 
-        verify(playerRepository).findByNameAndTeamName("Test Player", "Test Team")
+        verify(playerRepository).findByNameAndTeamName(testPlayer, testTeam)
     }
 
     @Test
@@ -205,7 +208,7 @@ class PlayerServiceTest {
     }
 
     @Test
-    fun `playerPerfomance should handle null stats as zero`() {
+    fun playerPerfomanceShouldHandleNullStatsAsZero() {
         val player = Player(
             id = 4, name = playerc, teamName = teamc, matchesPlayed = 10,
             goals = null, assists = null, yellowCards = null, redCards = null,
@@ -225,8 +228,7 @@ class PlayerServiceTest {
     }
 
     @Test
-    fun `playerPerfomance should throw exception if getPlayer cannot find player`() {
-        val exceptionMessage = "No hay jugador NonExistent en equipo Team"
+    fun playerPerfomanceShouldThrowExceptionIfGetPlayerCannotFindPlayer() {
 
         whenever(playerRepository.findByNameAndTeamName("NonExistent", teamstr))
             .thenReturn(null)
@@ -246,7 +248,7 @@ class PlayerServiceTest {
     }
 
     @Test
-    fun `findAll should return all players from repository`() {
+    fun findAllShouldReturnAllPlayersFromRepository() {
         val players = listOf(
             Player(id = 1, name = "Player 1", teamName = teama),
             Player(id = 2, name = "Player 2", teamName = teamb)
@@ -261,7 +263,7 @@ class PlayerServiceTest {
     }
 
     @Test
-    fun `findAll should return empty list if repository is empty`() {
+    fun findAllShouldReturnEmptyListIfRepositoryIsEmpty() {
         whenever(playerRepository.findAll()).thenReturn(emptyList())
 
         val result = playerService.findAll()
