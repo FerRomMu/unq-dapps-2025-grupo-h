@@ -9,14 +9,17 @@ import kotlin.test.assertEquals
 
 class WhoScoreWebServiceTest {
 
+    val whoScoreLink: String = "http://test.com/team"
+    val cssTag: String = ".search-result table tbody tr:nth-of-type(2) td a"
+    val elementTag: String = "#player-table-statistics-body tr"
+
     @Test
     fun shouldCorrectlyRetrievePlayersFromWebService() {
         val driver: WebDriver = mock()
-
         val teamLink: WebElement = mock()
-        doReturn("http://test.com/team").whenever(teamLink).getAttribute("href")
+        doReturn(whoScoreLink).whenever(teamLink).getAttribute("href")
 
-        whenever(driver.findElement(By.cssSelector(".search-result table tbody tr:nth-of-type(2) td a")))
+        whenever(driver.findElement(By.cssSelector(cssTag)))
             .thenReturn(teamLink)
 
         val playerTableBody: WebElement = mock()
@@ -25,7 +28,7 @@ class WhoScoreWebServiceTest {
 
         val playerRow: WebElement = mock()
 
-        whenever(driver.findElements(By.cssSelector("#player-table-statistics-body tr")))
+        whenever(driver.findElements(By.cssSelector(elementTag)))
             .thenReturn(listOf(playerRow))
 
         val playerNameElement: WebElement = mock()
@@ -88,10 +91,10 @@ class WhoScoreWebServiceTest {
         val driver = mock<WebDriver>()
         val teamLink = mock<WebElement>()
         whenever(driver.get(any())).then { }
-        whenever(driver.findElement(By.cssSelector(".search-result table tbody tr:nth-of-type(2) td a")))
+        whenever(driver.findElement(By.cssSelector(cssTag)))
             .thenReturn(teamLink)
-        whenever(teamLink.getAttribute("href")).thenReturn("http://test.com/team")
-        whenever(driver.findElements(By.cssSelector("#player-table-statistics-body tr")))
+        whenever(teamLink.getAttribute("href")).thenReturn(whoScoreLink)
+        whenever(driver.findElements(By.cssSelector(elementTag)))
             .thenReturn(emptyList())
 
         val service = WhoScoreWebService(driver)
@@ -108,10 +111,10 @@ class WhoScoreWebServiceTest {
         val row = mock<WebElement>()
 
         whenever(driver.get(any())).then { }
-        whenever(driver.findElement(By.cssSelector(".search-result table tbody tr:nth-of-type(2) td a")))
+        whenever(driver.findElement(By.cssSelector(cssTag)))
             .thenReturn(teamLink)
-        whenever(teamLink.getAttribute("href")).thenReturn("http://test.com/team")
-        whenever(driver.findElements(By.cssSelector("#player-table-statistics-body tr")))
+        whenever(teamLink.getAttribute("href")).thenReturn(whoScoreLink)
+        whenever(driver.findElements(By.cssSelector(elementTag)))
             .thenReturn(listOf(row))
 
         whenever(row.findElement(any())).thenThrow(RuntimeException("Error en fila"))

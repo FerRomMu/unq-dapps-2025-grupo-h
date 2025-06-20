@@ -199,7 +199,7 @@ class TeamServiceTest {
     }
 
     @Test
-    fun `getPlayersByTeamName does not fetch from FootballDataService if team already has players`() {
+    fun getPlayersByTeamNameDoesNotFetchFromFootballDataServiceIfTeamAlreadyHasPlayers() {
         val teamName = "TeamJ"
         val players = listOf("playerX", "playerY")
         val team = Team(name = teamName, apiId = 10, players = players)
