@@ -38,6 +38,10 @@ import unq.dda.grupoh.dto.footballData.TeamInfoDTO
 class FootballDataWebServiceTest {
 
     private val objectMapper = jacksonObjectMapper()
+    val realMadrid = "Real Madrid"
+    val playerOne = "Player One"
+    val playerTwo = "Player Two"
+    val testToken = "test-token"
 
     private val mockTeamResponseFound: String = objectMapper.writeValueAsString(
         TeamResponse(
@@ -46,7 +50,7 @@ class FootballDataWebServiceTest {
             teams = listOf(
                 FootballTeamDTO(
                     id = 101,
-                    name = "Real Madrid",
+                    name = realMadrid,
                     shortName = "RMA",
                     tla = "RMD",
                     crest = null,
@@ -73,7 +77,7 @@ class FootballDataWebServiceTest {
         TeamDetailResponse(
             area = AreaDTO(id = 222, name = "Spain", code = "ESP", flag = null),
             id = 101,
-            name = "Real Madrid",
+            name = realMadrid,
             shortName = "RMA",
             tla = "RMD",
             crest = null,
@@ -85,8 +89,8 @@ class FootballDataWebServiceTest {
             runningCompetitions = emptyList(),
             coach = null,
             squad = listOf(
-                PlayerDTO(id = 1, name = "Player One", position = "Forward", dateOfBirth = null, nationality = null),
-                PlayerDTO(id = 2, name = "Player Two", position = "Midfielder", dateOfBirth = null, nationality = null)
+                PlayerDTO(id = 1, name = playerOne, position = "Forward", dateOfBirth = null, nationality = null),
+                PlayerDTO(id = 2, name = playerTwo, position = "Midfielder", dateOfBirth = null, nationality = null)
             ),
             staff = emptyList(),
             lastUpdated = "2023-01-01T00:00:00Z"
@@ -109,7 +113,7 @@ class FootballDataWebServiceTest {
                     stage = "REGULAR_SEASON",
                     group = null,
                     lastUpdated = "2023-10-26T20:00:00Z",
-                    homeTeam = TeamInfoDTO(id = 101, name = "Real Madrid"),
+                    homeTeam = TeamInfoDTO(id = 101, name = realMadrid),
                     awayTeam = TeamInfoDTO(id = 102, name = "Barcelona"),
                     score = ScoreDTO(
                         winner = "HOME_TEAM",
@@ -133,7 +137,7 @@ class FootballDataWebServiceTest {
     )
 
     @Test
-    fun `findTeamByName should return team with players when found`() {
+    fun findTeamByNameShouldReturnTeamWithPlayersWhenFound() {
         val httpClient: HttpClient = mock()
         val logger: Logger = mock()
 
@@ -160,7 +164,7 @@ class FootballDataWebServiceTest {
         ).thenReturn(httpResponsePlayers)
 
         val service = FootballDataWebService(
-            apiToken = "test-token",
+            apiToken = testToken,
             verboseLogging = "false",
             client = httpClient,
             logger = logger
@@ -173,7 +177,7 @@ class FootballDataWebServiceTest {
         assertNotNull(team)
         assertEquals("RMA", team.name)
         assertEquals(101, team.apiId)
-        assertEquals(listOf("Player One", "Player Two"), team.players)
+        assertEquals(listOf(playerOne, playerTwo), team.players)
         assertTrue(allTeams.isNotEmpty())
 
         verify(httpClient, times(2)).send(any(), any<HttpResponse.BodyHandler<String>>())
@@ -181,13 +185,13 @@ class FootballDataWebServiceTest {
     }
 
     @Test
-    fun `findTeamByName should return null team when not found`() {
+    fun findTeamByNameShouldReturnNullTeamWhenNotFound() {
         val httpClient: HttpClient = mock()
         val httpResponse: HttpResponse<String> = mock()
         val logger: Logger = mock()
 
         val footballDataService = FootballDataWebService(
-            apiToken = "test-token",
+            apiToken = testToken,
             verboseLogging = "false",
             client = httpClient,
             logger = logger
@@ -207,19 +211,19 @@ class FootballDataWebServiceTest {
     }
 
     @Test
-    fun `findTeamById should return team with players`() {
+    fun findTeamByIdShouldReturnTeamWithPlayers() {
         val httpClient: HttpClient = mock()
         val httpResponse: HttpResponse<String> = mock()
         val logger: Logger = mock()
 
         val footballDataService = FootballDataWebService(
-            apiToken = "test-token",
+            apiToken = testToken,
             verboseLogging = "false",
             client = httpClient,
             logger = logger
         )
         val apiId = 101
-        val teamName = "Real Madrid"
+        val teamName = realMadrid
         whenever(httpResponse.statusCode()).thenReturn(200)
         whenever(httpResponse.body()).thenReturn(mockTeamDetailResponseWithPlayers)
         whenever(httpClient.send(any(), any<HttpResponse.BodyHandler<String>>()))
@@ -230,7 +234,7 @@ class FootballDataWebServiceTest {
         assertNotNull(team)
         assertEquals(teamName, team.name)
         assertEquals(apiId, team.apiId)
-        assertEquals(listOf("Player One", "Player Two"), team.players)
+        assertEquals(listOf(playerOne, playerTwo), team.players)
         verify(httpClient).send(
             argThat { request: HttpRequest ->
                 request.uri().toString().replace("//", "/").replace("https:/", "https://") ==
@@ -240,19 +244,19 @@ class FootballDataWebServiceTest {
     }
 
     @Test
-    fun `findTeamById should throw ExternalErrorException if fetching players fails`() {
+    fun findTeamByIdShouldThrowExternalErrorExceptionIfFetchingPlayersFails() {
         val httpClient: HttpClient = mock()
         val httpResponse: HttpResponse<String> = mock()
         val logger: Logger = mock()
 
         val footballDataService = FootballDataWebService(
-            apiToken = "test-token",
+            apiToken = testToken,
             verboseLogging = "false",
             client = httpClient,
             logger = logger
         )
         val apiId = 101
-        val teamName = "Real Madrid"
+        val teamName = realMadrid
         whenever(httpResponse.statusCode()).thenReturn(404)
         whenever(httpResponse.body()).thenReturn("Team Not Found")
         whenever(httpClient.send(any(), any<HttpResponse.BodyHandler<String>>()))
@@ -266,19 +270,19 @@ class FootballDataWebServiceTest {
     }
 
     @Test
-    fun `findMatchesByTeam should return list of matches`() {
+    fun findMatchesByTeamShouldReturnListOfMatches() {
         // Given: Configuración específica para este test
         val httpClient: HttpClient = mock()
         val httpResponse: HttpResponse<String> = mock()
         val logger: Logger = mock()
 
         val footballDataService = FootballDataWebService(
-            apiToken = "test-token",
+            apiToken = testToken,
             verboseLogging = "false",
             client = httpClient,
             logger = logger
         )
-        val team = Team(name = "Real Madrid", apiId = 101)
+        val team = Team(name = realMadrid, apiId = 101)
         whenever(httpResponse.statusCode()).thenReturn(200)
         whenever(httpResponse.body()).thenReturn(mockMatchesResponse)
         whenever(httpClient.send(any(), any<HttpResponse.BodyHandler<String>>()))
@@ -294,7 +298,7 @@ class FootballDataWebServiceTest {
             assertEquals("2023-10-26T18:00:00Z", date)
             assertEquals("FINISHED", status)
             assertEquals("REGULAR_SEASON", stage)
-            assertEquals("Real Madrid", homeTeam)
+            assertEquals(realMadrid, homeTeam)
             assertEquals("Barcelona", awayTeam)
             assertEquals(3, scoreHome)
             assertEquals(1, scoreAway)
@@ -311,18 +315,18 @@ class FootballDataWebServiceTest {
     }
 
     @Test
-    fun `findMatchesByTeam should return empty list if no matches found`() {
+    fun findMatchesByTeamShouldReturnEmptyListIfNoMatchesFound() {
         val httpClient: HttpClient = mock()
         val httpResponse: HttpResponse<String> = mock()
         val logger: Logger = mock()
 
         val footballDataService = FootballDataWebService(
-            apiToken = "test-token",
+            apiToken = testToken,
             verboseLogging = "false",
             client = httpClient,
             logger = logger
         )
-        val team = Team(name = "Real Madrid", apiId = 101)
+        val team = Team(name = realMadrid, apiId = 101)
         whenever(httpResponse.statusCode()).thenReturn(200)
         whenever(httpResponse.body()).thenReturn(mockEmptyMatchesResponse)
         whenever(httpClient.send(any(), any<HttpResponse.BodyHandler<String>>()))
@@ -335,18 +339,18 @@ class FootballDataWebServiceTest {
     }
 
     @Test
-    fun `findMatchesByTeam should throw ExternalErrorException if fetching matches fails`() {
+    fun findMatchesByTeamShouldThrowExternalErrorExceptionIfFetchingMatchesFails() {
         val httpClient: HttpClient = mock()
         val httpResponse: HttpResponse<String> = mock()
         val logger: Logger = mock()
 
         val footballDataService = FootballDataWebService(
-            apiToken = "test-token",
+            apiToken = testToken,
             verboseLogging = "false",
             client = httpClient,
             logger = logger
         )
-        val team = Team(name = "Real Madrid", apiId = 101)
+        val team = Team(name = realMadrid, apiId = 101)
         whenever(httpResponse.statusCode()).thenReturn(500)
         whenever(httpResponse.body()).thenReturn("Server Error")
         whenever(httpClient.send(any(), any<HttpResponse.BodyHandler<String>>()))
