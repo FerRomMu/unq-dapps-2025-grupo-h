@@ -109,6 +109,7 @@ class TeamServiceTest {
             listOf(
                 Player(
                     name = "playerA",
+                    teamName = "teamA",
                     age = 25,
                     position = "Forward",
                     heightCm = 180,
@@ -128,6 +129,7 @@ class TeamServiceTest {
                 ),
                 Player(
                     name = "playerB",
+                    teamName = "teamB",
                     age = 27,
                     position = "Midfielder",
                     heightCm = 175,

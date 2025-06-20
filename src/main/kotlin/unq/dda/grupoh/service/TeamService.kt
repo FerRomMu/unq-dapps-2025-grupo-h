@@ -38,7 +38,7 @@ class TeamService(
     }
 
     fun getPlayersByTeamName(teamName: String): List<String> {
-        var team = getTeam(teamName)
+        val team = getTeam(teamName)
 
         if (team.players.isEmpty()) {
             team.players = whoScoreWebService.findPlayersByTeamName(teamName).map { it.name }

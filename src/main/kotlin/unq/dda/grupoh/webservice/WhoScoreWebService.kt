@@ -26,7 +26,7 @@ class WhoScoreWebService (
     }
     ) {
 
-    private fun extractPlayerFromRow(row: WebElement): Player {
+    private fun extractPlayerFromRow(row: WebElement, teamName: String): Player {
         val nameElement = row.findElement(By.cssSelector("td.grid-abs a.player-link span.iconize"))
         val playerName = nameElement.text.trim()
 
@@ -50,6 +50,7 @@ class WhoScoreWebService (
 
         return Player(
             name = playerName,
+            teamName = teamName,
             age = age,
             position = detailedPosition,
             heightCm = heightCm,
@@ -87,7 +88,11 @@ class WhoScoreWebService (
             throw ResourceNotFoundException("No se encontró el equipo '$teamName' o su URL en los resultados de búsqueda.")
         }
 
-        return "https://es.whoscored.com$fullTeamUrl"
+        return if (fullTeamUrl.startsWith("http")) {
+            fullTeamUrl
+        } else {
+            "https://es.whoscored.com$fullTeamUrl"
+        }
     }
 
     fun findPlayersByTeamName(name: String): List<Player> {
@@ -108,7 +113,7 @@ class WhoScoreWebService (
 
             for (row in playerRows) {
                 try {
-                    val player = extractPlayerFromRow(row)
+                    val player = extractPlayerFromRow(row, name)
                     players.add(player)
                 } catch (e: Exception) {
                     throw ResourceNotFoundException("Error al procesar la fila de un jugador: ${e.message}. Fila: ${row.text.substring(0, Math.min(row.text.length, 100))}...")
