@@ -14,43 +14,43 @@ import unq.dda.grupoh.webservice.WhoScoreWebService
 ) {
 
     fun getPlayer(teamName: String, playerName: String): Player {
-<span class="nc" id="L17">        var player = playerRepository.findByNameAndTeamName(playerName, teamName)</span>
-<span class="nc bnc" id="L18" title="All 2 branches missed.">        if (player == null) {</span>
-<span class="nc" id="L19">            val scrapedPlayers = whoScoreWebService.findPlayersByTeamName(teamName)</span>
-<span class="nc" id="L20">            val existingByName = playerRepository.findAllByTeamName(teamName).associateBy { it.name }</span>
+<span class="fc" id="L17">        var player = playerRepository.findByNameAndTeamName(playerName, teamName)</span>
+<span class="fc bfc" id="L18" title="All 2 branches covered.">        if (player == null) {</span>
+<span class="fc" id="L19">            val scrapedPlayers = whoScoreWebService.findPlayersByTeamName(teamName)</span>
+<span class="fc" id="L20">            val existingByName = playerRepository.findAllByTeamName(teamName).associateBy { it.name }</span>
 
-<span class="nc" id="L22">            val toSave = scrapedPlayers.map {</span>
-<span class="nc" id="L23">                val existing = existingByName[it.name]</span>
-<span class="nc bnc" id="L24" title="All 2 branches missed.">                if (existing != null) {</span>
-<span class="nc" id="L25">                    it.copy(id = existing.id) // fuerza UPDATE</span>
+<span class="fc" id="L22">            val toSave = scrapedPlayers.map {</span>
+<span class="fc" id="L23">                val existing = existingByName[it.name]</span>
+<span class="fc bfc" id="L24" title="All 2 branches covered.">                if (existing != null) {</span>
+<span class="fc" id="L25">                    it.copy(id = existing.id) // fuerza UPDATE</span>
                 } else {
-<span class="nc" id="L27">                    it</span>
+<span class="fc" id="L27">                    it</span>
                 }
             }
-<span class="nc" id="L30">            playerRepository.saveAll(toSave)</span>
-<span class="nc bnc" id="L31" title="All 6 branches missed.">            player = scrapedPlayers.find { it.name == playerName } ?:</span>
-<span class="nc" id="L32">            throw ResourceNotFoundException(&quot;No hay jugador $playerName en equipo $teamName&quot;)</span>
+<span class="fc" id="L30">            playerRepository.saveAll(toSave)</span>
+<span class="fc bfc" id="L31" title="All 6 branches covered.">            player = scrapedPlayers.find { it.name == playerName } ?:</span>
+<span class="fc" id="L32">            throw ResourceNotFoundException(&quot;No hay jugador $playerName en equipo $teamName&quot;)</span>
         }
-<span class="nc" id="L34">        return player</span>
+<span class="fc" id="L34">        return player</span>
     }
 
     fun playerPerfomance(teamName: String, playerName: String): PlayerPerfomance {
-<span class="nc" id="L38">        val player = getPlayer(teamName, playerName)</span>
-<span class="nc bnc" id="L39" title="All 8 branches missed.">        val matches = player.matchesPlayed?.takeIf { it &gt; 0 } ?: 1</span>
-<span class="nc" id="L40">        return PlayerPerfomance(</span>
-<span class="nc" id="L41">            playerName = player.name,</span>
-<span class="nc" id="L42">            teamName = player.teamName,</span>
-<span class="nc bnc" id="L43" title="All 2 branches missed.">            goalsPerGame = (player.goals ?: 0).toDouble() / matches,</span>
-<span class="nc bnc" id="L44" title="All 2 branches missed.">            assistsPerGame = (player.assists ?: 0).toDouble() / matches,</span>
-<span class="nc bnc" id="L45" title="All 4 branches missed.">            cardsPerGame = ((player.yellowCards ?: 0) + (player.redCards ?: 0)).toDouble() / matches,</span>
-<span class="nc bnc" id="L46" title="All 2 branches missed.">            shotsPerGame = player.shotsPerGame ?: 0.0,</span>
-<span class="nc bnc" id="L47" title="All 2 branches missed.">            aerialsWonPerGame = player.aerialsWonPerGame ?: 0.0,</span>
-<span class="nc bnc" id="L48" title="All 2 branches missed.">            rating = player.rating ?: 0.0</span>
+<span class="fc" id="L38">        val player = getPlayer(teamName, playerName)</span>
+<span class="fc bfc" id="L39" title="All 8 branches covered.">        val matches = player.matchesPlayed?.takeIf { it &gt; 0 } ?: 1</span>
+<span class="fc" id="L40">        return PlayerPerfomance(</span>
+<span class="fc" id="L41">            playerName = player.name,</span>
+<span class="fc" id="L42">            teamName = player.teamName,</span>
+<span class="fc bfc" id="L43" title="All 2 branches covered.">            goalsPerGame = (player.goals ?: 0).toDouble() / matches,</span>
+<span class="fc bfc" id="L44" title="All 2 branches covered.">            assistsPerGame = (player.assists ?: 0).toDouble() / matches,</span>
+<span class="fc bfc" id="L45" title="All 4 branches covered.">            cardsPerGame = ((player.yellowCards ?: 0) + (player.redCards ?: 0)).toDouble() / matches,</span>
+<span class="fc bfc" id="L46" title="All 2 branches covered.">            shotsPerGame = player.shotsPerGame ?: 0.0,</span>
+<span class="fc bfc" id="L47" title="All 2 branches covered.">            aerialsWonPerGame = player.aerialsWonPerGame ?: 0.0,</span>
+<span class="fc bfc" id="L48" title="All 2 branches covered.">            rating = player.rating ?: 0.0</span>
         )
     }
 
     fun findAll(): List&lt;Player&gt; {
-<span class="nc" id="L53">        return playerRepository.findAll()</span>
+<span class="fc" id="L53">        return playerRepository.findAll()</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

@@ -11,24 +11,24 @@ import jakarta.persistence.UniqueConstraint
 @Table(name = &quot;players&quot;, uniqueConstraints = [UniqueConstraint(columnNames = [&quot;name&quot;, &quot;team_name&quot;])])
 <span class="fc" id="L12">data class Player(</span>
 <span class="fc" id="L13">    val name: String,</span>
-<span class="pc" id="L14">    val teamName: String,</span>
-<span class="pc" id="L15">    val age: Int?,</span>
-<span class="pc" id="L16">    val position: String?,</span>
-<span class="pc" id="L17">    val heightCm: Int?,</span>
-<span class="pc" id="L18">    val weightKg: Int?,</span>
-<span class="pc" id="L19">    val matchesPlayed: Int?,</span>
-<span class="pc" id="L20">    val minutesPlayed: Int?,</span>
-<span class="pc" id="L21">    val goals: Int?,</span>
-<span class="pc" id="L22">    val assists: Int?,</span>
-<span class="pc" id="L23">    val yellowCards: Int?,</span>
-<span class="pc" id="L24">    val redCards: Int?,</span>
-<span class="pc" id="L25">    val shotsPerGame: Double?,</span>
-<span class="pc" id="L26">    val passSuccessPercentage: Double?,</span>
-<span class="pc" id="L27">    val aerialsWonPerGame: Double?,</span>
-<span class="pc" id="L28">    val manOfTheMatch: Int?,</span>
-<span class="pc" id="L29">    val rating: Double?,</span>
+<span class="fc" id="L14">    val teamName: String,</span>
+<span class="fc" id="L15">    val age: Int? = null,</span>
+<span class="fc" id="L16">    val position: String? = null,</span>
+<span class="fc" id="L17">    val heightCm: Int? = null,</span>
+<span class="fc" id="L18">    val weightKg: Int? = null,</span>
+<span class="fc" id="L19">    val matchesPlayed: Int? = null,</span>
+<span class="fc" id="L20">    val minutesPlayed: Int? = null,</span>
+<span class="fc" id="L21">    val goals: Int? = null,</span>
+<span class="fc" id="L22">    val assists: Int? = null,</span>
+<span class="fc" id="L23">    val yellowCards: Int? = null,</span>
+<span class="fc" id="L24">    val redCards: Int? = null,</span>
+<span class="fc" id="L25">    val shotsPerGame: Double? = null,</span>
+<span class="fc" id="L26">    val passSuccessPercentage: Double? = null,</span>
+<span class="fc" id="L27">    val aerialsWonPerGame: Double? = null,</span>
+<span class="fc" id="L28">    val manOfTheMatch: Int? = null,</span>
+<span class="fc" id="L29">    val rating: Double? = null,</span>
 <span class="fc" id="L30">    @Id</span>
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-<span class="pc" id="L32">    val id: Int? = null</span>
+<span class="fc" id="L32">    val id: Int? = null</span>
 <span class="fc" id="L33">)</span>
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>
