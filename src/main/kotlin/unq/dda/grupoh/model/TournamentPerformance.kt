@@ -1,14 +1,17 @@
 package unq.dda.grupoh.model
 
+import jakarta.persistence.Embeddable
+
+@Embeddable
 data class TournamentPerformance(
-    val tournament: String,
-    val apps: Int? = null,
-    val goals: Int? = null,
-    val shotsPerGame: Double? = null,
-    val yellowCards: Int? = null,
-    val redCards: Int? = null,
-    val possessionPercentage: Double? = null,
-    val passSuccessPercentage: Double? = null,
-    val aerialsWonPerGame: Double? = null,
-    val rating: Double? = null
+    var tournament: String? = null,
+    var apps: Int? = null,
+    var goals: Int? = null,
+    var shotsPerGame: Double? = null,
+    var yellowCards: Int? = null,
+    var redCards: Int? = null,
+    var possessionPercentage: Double? = null,
+    var passSuccessPercentage: Double? = null,
+    var aerialsWonPerGame: Double? = null,
+    var rating: Double? = null
 )

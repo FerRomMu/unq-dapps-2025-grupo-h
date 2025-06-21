@@ -7,12 +7,15 @@ import unq.dda.grupoh.exceptions.ResourceNotFoundException
 import unq.dda.grupoh.webservice.FootballDataWebService
 import unq.dda.grupoh.model.Match
 import unq.dda.grupoh.model.Team
+import unq.dda.grupoh.model.TeamComparision
+import unq.dda.grupoh.repository.TeamPerformanceRepository
 import unq.dda.grupoh.repository.TeamRepository
 import unq.dda.grupoh.webservice.WhoScoreWebService
 
 @Service
 class TeamService(
     private val teamRepository: TeamRepository,
+    private val teamPerformanceRepository: TeamPerformanceRepository,
     private val footballDataService: FootballDataWebService,
     private val whoScoreWebService: WhoScoreWebService
 ) {
@@ -55,5 +58,23 @@ class TeamService(
 
     fun getNextMatchesByTeamName(teamName: String): List<Match> {
         return getMatchesByTeamName(teamName).filter { it.isNotPlayedYet() }
+    }
+
+    fun compareTeams(teamA: String, teamB: String): TeamComparision {
+        val teamAPerformance = teamPerformanceRepository.findByTeamName(teamA) ?:
+        whoScoreWebService.findTeamPerformanceByName(teamA).also {
+            teamPerformanceRepository.save(it)
+        }
+        val teamBPerformance = teamPerformanceRepository.findByTeamName(teamA) ?:
+        whoScoreWebService.findTeamPerformanceByName(teamB).also {
+            teamPerformanceRepository.save(it)
+        }
+        return TeamComparision(
+            Pair(
+                teamAPerformance.meanPerformance.rating,
+                teamBPerformance.meanPerformance.rating),
+            teamAPerformance,
+            teamBPerformance
+        )
     }
 }

@@ -9,6 +9,7 @@ import unq.dda.grupoh.webservice.FootballDataWebService
 import unq.dda.grupoh.model.Match
 import unq.dda.grupoh.model.Player
 import unq.dda.grupoh.model.Team
+import unq.dda.grupoh.repository.TeamPerformanceRepository
 import unq.dda.grupoh.repository.TeamRepository
 import unq.dda.grupoh.webservice.WhoScoreWebService
 
@@ -17,7 +18,8 @@ class TeamServiceTest {
     private val teamRepository: TeamRepository = mock()
     private val footballDataService: FootballDataWebService = mock()
     private val whoScoreWebService: WhoScoreWebService = mock()
-    private val teamService = TeamService(teamRepository, footballDataService, whoScoreWebService)
+    private val teamPerformanceRepository: TeamPerformanceRepository = mock()
+    private val teamService = TeamService(teamRepository, teamPerformanceRepository, footballDataService, whoScoreWebService)
 
     @Test
     fun getTeamReturnsTeamFromRepositoryIfFound() {
