@@ -10,6 +10,8 @@ import org.openqa.selenium.support.ui.ExpectedConditions
 import org.openqa.selenium.support.ui.WebDriverWait
 import unq.dda.grupoh.exceptions.ResourceNotFoundException
 import unq.dda.grupoh.model.Player
+import unq.dda.grupoh.model.TeamPerformance
+import unq.dda.grupoh.model.TournamentPerformance
 import java.time.Duration
 
 @Service
@@ -69,6 +71,47 @@ class WhoScoreWebService (
         )
     }
 
+    private fun extractPerformanceFromRow(row: WebElement): TournamentPerformance {
+        val cells = row.findElements(By.tagName("td"))
+
+        if (cells.size < 9) {
+            throw IllegalArgumentException("La fila no tiene suficientes celdas para extraer el rendimiento del torneo.")
+        }
+
+        val tournament = cells[0].text.trim()
+        val apps = cells[1].text.toIntOrNull()
+        val goals = cells[2].text.toIntOrNull()
+        val shotsPerGame = cells[3].text.toDoubleOrNull()
+
+        var yellowCards: Int? = null
+        var redCards: Int? = null
+        try {
+            val disciplineSpan = cells[4].findElement(By.cssSelector("span.yellow-card-box"))
+            yellowCards = disciplineSpan.text.toIntOrNull()
+            val redCardSpan = cells[4].findElement(By.cssSelector("span.red-card-box"))
+            redCards = redCardSpan.text.toIntOrNull()
+        } catch (e: org.openqa.selenium.NoSuchElementException) {
+        }
+
+        val possessionPercentage = cells[5].text.toDoubleOrNull()
+        val passSuccessPercentage = cells[6].text.toDoubleOrNull()
+        val aerialsWonPerGame = cells[7].text.toDoubleOrNull()
+        val rating = cells[8].text.toDoubleOrNull()
+
+        return TournamentPerformance(
+            tournament = tournament,
+            apps = apps,
+            goals = goals,
+            shotsPerGame = shotsPerGame,
+            yellowCards = yellowCards,
+            redCards = redCards,
+            possessionPercentage = possessionPercentage,
+            passSuccessPercentage = passSuccessPercentage,
+            aerialsWonPerGame = aerialsWonPerGame,
+            rating = rating
+        )
+    }
+
     private fun findTeamUrl(teamName: String): String {
         val searchUrl = "https://es.whoscored.com/search/?t=${teamName.replace(" ", "+")}"
         driver.get(searchUrl)
@@ -124,5 +167,53 @@ class WhoScoreWebService (
         }
 
         return players
+    }
+
+    fun findTeamPerformanceByName(teamName: String): TeamPerformance {
+        val teamUrl = findTeamUrl(teamName)
+        driver.get(teamUrl)
+
+        val wait = WebDriverWait(driver, Duration.ofSeconds(10))
+
+        val tournamentPerformances = mutableListOf<TournamentPerformance>()
+        var meanPerformance: TournamentPerformance? = null
+
+        try {
+            wait.until(ExpectedConditions.presenceOfElementLocated(By.id("top-team-stats-summary-content")))
+
+            val tableBody = driver.findElement(By.id("top-team-stats-summary-content"))
+            val rows = tableBody.findElements(By.tagName("tr"))
+
+            if (rows.isEmpty()) {
+                throw ResourceNotFoundException("No se encontraron filas de rendimiento en la tabla de resumen del equipo.")
+            }
+
+            for (row in rows) {
+                try {
+                    val performance = extractPerformanceFromRow(row)
+                    if (performance.tournament == "Total / Average") {
+                        meanPerformance = performance
+                    } else {
+                        tournamentPerformances.add(performance)
+                    }
+                } catch (e: Exception) {
+                    throw ResourceNotFoundException("Error al procesar la fila de rendimiento del equipo: ${e.message}. Fila: ${row.text.substring(0,
+                        row.text.length.coerceAtMost(100)
+                    )}...")
+                }
+            }
+
+            if (meanPerformance == null) {
+                throw ResourceNotFoundException("No se encontró la fila de 'Total / Average' para el rendimiento del equipo '$teamName'.")
+            }
+
+            return TeamPerformance(
+                teamName = teamName,
+                tournamentPerformances = tournamentPerformances,
+                meanPerformance = meanPerformance
+            )
+        } catch (e: Exception) {
+            throw ResourceNotFoundException("No se pudo cargar la información de rendimiento para el equipo '$teamName'. Error: ${e.message}")
+        }
     }
 }
