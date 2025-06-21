@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import unq.dda.grupoh.model.Match
+import unq.dda.grupoh.model.TeamComparision
 import unq.dda.grupoh.service.TeamService
 
 @RestController
@@ -62,4 +63,9 @@ class TeamController(
         @RequestParam("name") teamName: String
     ): List<Match> = teamService.getNextMatchesByTeamName(teamName)
 
+    @GetMapping("/team-comparision")
+    fun getTeamComparision(
+        @RequestParam("teamA") teamA: String,
+        @RequestParam("teamB") teamB: String
+    ): TeamComparision = teamService.compareTeams(teamA, teamB)
 }

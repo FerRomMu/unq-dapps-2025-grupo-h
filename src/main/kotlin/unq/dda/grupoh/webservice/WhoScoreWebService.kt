@@ -173,47 +173,60 @@ class WhoScoreWebService (
         val teamUrl = findTeamUrl(teamName)
         driver.get(teamUrl)
 
-        val wait = WebDriverWait(driver, Duration.ofSeconds(10))
+        val wait = WebDriverWait(driver, Duration.ofSeconds(20))
 
         val tournamentPerformances = mutableListOf<TournamentPerformance>()
         var meanPerformance: TournamentPerformance? = null
 
         try {
+            // Esperar a que el contenedor principal del tbody esté presente
             wait.until(ExpectedConditions.presenceOfElementLocated(By.id("top-team-stats-summary-content")))
+
+            // Esperar que la celda con "Total / Average" sea visible.
+            val totalAverageRowLocator = By.xpath("//tbody[@id='top-team-stats-summary-content']/tr[td[1]/strong[contains(text(), 'Total / Average')]]")
+            wait.until(ExpectedConditions.visibilityOfElementLocated(totalAverageRowLocator))
+
 
             val tableBody = driver.findElement(By.id("top-team-stats-summary-content"))
             val rows = tableBody.findElements(By.tagName("tr"))
 
             if (rows.isEmpty()) {
-                throw ResourceNotFoundException("No se encontraron filas de rendimiento en la tabla de resumen del equipo.")
+                throw ResourceNotFoundException("No se encontraron filas de rendimiento en la tabla de resumen del equipo, incluso después de esperar la fila 'Total / Average'.")
             }
 
             for (row in rows) {
                 try {
                     val performance = extractPerformanceFromRow(row)
-                    if (performance.tournament == "Total / Average") {
+                    if (performance.tournament!!.trim() == "Total / Average") {
                         meanPerformance = performance
                     } else {
                         tournamentPerformances.add(performance)
                     }
                 } catch (e: Exception) {
-                    throw ResourceNotFoundException("Error al procesar la fila de rendimiento del equipo: ${e.message}. Fila: ${row.text.substring(0,
-                        row.text.length.coerceAtMost(100)
-                    )}...")
+                    throw ResourceNotFoundException("Error al procesar la fila de rendimiento del equipo: ${e.message}. Fila: ${row.text.substring(0, Math.min(row.text.length, 100))}...")
                 }
             }
 
             if (meanPerformance == null) {
-                throw ResourceNotFoundException("No se encontró la fila de 'Total / Average' para el rendimiento del equipo '$teamName'.")
+                throw ResourceNotFoundException("No se encontró la fila de 'Total / Average' después de cargar la tabla para el equipo '$teamName'.")
             }
 
             return TeamPerformance(
                 teamName = teamName,
                 tournamentPerformances = tournamentPerformances,
-                meanPerformance = meanPerformance
+                meanPerformance = meanPerformance!!
             )
         } catch (e: Exception) {
+            // --- CAMBIO CLAVE AQUÍ: Imprimir el pageSource en caso de error ---
+            System.err.println("--- INICIO DEL DOM EN EL MOMENTO DEL ERROR ---")
+            System.err.println(driver.pageSource)
+            System.err.println("--- FIN DEL DOM EN EL MOMENTO DEL ERROR ---")
+            // -------------------------------------------------------------
             throw ResourceNotFoundException("No se pudo cargar la información de rendimiento para el equipo '$teamName'. Error: ${e.message}")
+        } finally {
+            // Es una buena práctica cerrar el driver cuando terminamos con él
+            driver.quit() // Descomentar esto si quieres que el driver se cierre después de cada llamada.
+            // Si lo reutilizas para múltiples llamadas, no lo cierres aquí.
         }
     }
 }
