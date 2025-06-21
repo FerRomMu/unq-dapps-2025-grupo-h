@@ -18,11 +18,11 @@ import unq.dda.grupoh.service.PlayerService
     fun getPlayerPerformance(
         @RequestParam(&quot;team&quot;) teamName: String,
         @RequestParam(&quot;name&quot;) playerName: String
-<span class="nc" id="L21">    ): PlayerPerfomance = playerService.playerPerfomance(teamName, playerName)</span>
+<span class="fc" id="L21">    ): PlayerPerfomance = playerService.playerPerfomance(teamName, playerName)</span>
 
     @GetMapping(&quot;/players&quot;)
     fun getAllPlayers(): List&lt;Player&gt; {
-<span class="nc" id="L25">        return playerService.findAll()</span>
+<span class="fc" id="L25">        return playerService.findAll()</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>
