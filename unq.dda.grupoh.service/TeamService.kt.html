@@ -7,54 +7,75 @@ import unq.dda.grupoh.exceptions.ResourceNotFoundException
 import unq.dda.grupoh.webservice.FootballDataWebService
 import unq.dda.grupoh.model.Match
 import unq.dda.grupoh.model.Team
+import unq.dda.grupoh.model.TeamComparision
+import unq.dda.grupoh.repository.TeamPerformanceRepository
 import unq.dda.grupoh.repository.TeamRepository
 import unq.dda.grupoh.webservice.WhoScoreWebService
 
-<span class="fc" id="L13">@Service</span>
-<span class="fc" id="L14">class TeamService(</span>
-<span class="fc" id="L15">    private val teamRepository: TeamRepository,</span>
-<span class="fc" id="L16">    private val footballDataService: FootballDataWebService,</span>
-<span class="fc" id="L17">    private val whoScoreWebService: WhoScoreWebService</span>
+<span class="fc" id="L15">@Service</span>
+<span class="fc" id="L16">class TeamService(</span>
+<span class="fc" id="L17">    private val teamRepository: TeamRepository,</span>
+<span class="fc" id="L18">    private val teamPerformanceRepository: TeamPerformanceRepository,</span>
+<span class="fc" id="L19">    private val footballDataService: FootballDataWebService,</span>
+<span class="fc" id="L20">    private val whoScoreWebService: WhoScoreWebService</span>
 ) {
 
     @Transactional
     private fun saveOrUpdateByName(team: Team): Team {
-<span class="fc" id="L22">        val existing = teamRepository.findByName(team.name)</span>
-<span class="fc bfc" id="L23" title="All 2 branches covered.">        return if (existing == null) {</span>
-<span class="fc" id="L24">            teamRepository.save(team)</span>
-<span class="fc" id="L25">        } else {</span>
-<span class="pc bpc" id="L26" title="1 of 2 branches missed.">            if (existing.players.isEmpty()) existing.players = team.players</span>
-<span class="fc" id="L27">            teamRepository.save(existing)</span>
+<span class="fc" id="L25">        val existing = teamRepository.findByName(team.name)</span>
+<span class="fc bfc" id="L26" title="All 2 branches covered.">        return if (existing == null) {</span>
+<span class="fc" id="L27">            teamRepository.save(team)</span>
+<span class="fc" id="L28">        } else {</span>
+<span class="pc bpc" id="L29" title="1 of 2 branches missed.">            if (existing.players.isEmpty()) existing.players = team.players</span>
+<span class="fc" id="L30">            teamRepository.save(existing)</span>
         }
     }
 
     fun getTeam(teamName: String): Team {
-<span class="fc bfc" id="L32" title="All 2 branches covered.">        return teamRepository.findByName(teamName)</span>
-<span class="fc" id="L33">            ?: run {</span>
-<span class="pc bpc" id="L34" title="1 of 2 branches missed.">                val (mainTeam, allTeams) = runBlocking { footballDataService.findTeamByName(teamName) }</span>
-<span class="fc" id="L35">                allTeams.forEach { saveOrUpdateByName(it) }</span>
-<span class="fc bfc" id="L36" title="All 2 branches covered.">                mainTeam ?: throw ResourceNotFoundException(&quot;Team not found.&quot;)</span>
+<span class="fc bfc" id="L35" title="All 2 branches covered.">        return teamRepository.findByName(teamName)</span>
+<span class="fc" id="L36">            ?: run {</span>
+<span class="pc bpc" id="L37" title="1 of 2 branches missed.">                val (mainTeam, allTeams) = runBlocking { footballDataService.findTeamByName(teamName) }</span>
+<span class="fc" id="L38">                allTeams.forEach { saveOrUpdateByName(it) }</span>
+<span class="fc bfc" id="L39" title="All 2 branches covered.">                mainTeam ?: throw ResourceNotFoundException(&quot;Team not found.&quot;)</span>
             }
     }
 
     fun getPlayersByTeamName(teamName: String): List&lt;String&gt; {
-<span class="fc" id="L41">        val team = getTeam(teamName)</span>
+<span class="fc" id="L44">        val team = getTeam(teamName)</span>
 
-<span class="fc bfc" id="L43" title="All 2 branches covered.">        if (team.players.isEmpty()) {</span>
-<span class="fc" id="L44">            team.players = whoScoreWebService.findPlayersByTeamName(teamName).map { it.name }</span>
-<span class="fc" id="L45">            saveOrUpdateByName(team)</span>
+<span class="fc bfc" id="L46" title="All 2 branches covered.">        if (team.players.isEmpty()) {</span>
+<span class="fc" id="L47">            team.players = whoScoreWebService.findPlayersByTeamName(teamName).map { it.name }</span>
+<span class="fc" id="L48">            saveOrUpdateByName(team)</span>
         }
 
-<span class="fc" id="L48">        return team.players</span>
+<span class="fc" id="L51">        return team.players</span>
     }
 
     fun getMatchesByTeamName(teamName: String): List&lt;Match&gt; {
-<span class="fc" id="L52">        val team = getTeam(teamName)</span>
-<span class="fc" id="L53">        return footballDataService.findMatchesByTeam(team)</span>
+<span class="fc" id="L55">        val team = getTeam(teamName)</span>
+<span class="fc" id="L56">        return footballDataService.findMatchesByTeam(team)</span>
     }
 
     fun getNextMatchesByTeamName(teamName: String): List&lt;Match&gt; {
-<span class="fc" id="L57">        return getMatchesByTeamName(teamName).filter { it.isNotPlayedYet() }</span>
+<span class="fc" id="L60">        return getMatchesByTeamName(teamName).filter { it.isNotPlayedYet() }</span>
+    }
+
+    fun compareTeams(teamA: String, teamB: String): TeamComparision {
+<span class="nc bnc" id="L64" title="All 2 branches missed.">        val teamAPerformance = teamPerformanceRepository.findByTeamName(teamA) ?:</span>
+<span class="nc" id="L65">        whoScoreWebService.findTeamPerformanceByName(teamA).also {</span>
+<span class="nc" id="L66">            teamPerformanceRepository.save(it)</span>
+<span class="nc" id="L67">        }</span>
+<span class="nc bnc" id="L68" title="All 2 branches missed.">        val teamBPerformance = teamPerformanceRepository.findByTeamName(teamA) ?:</span>
+<span class="nc" id="L69">        whoScoreWebService.findTeamPerformanceByName(teamB).also {</span>
+<span class="nc" id="L70">            teamPerformanceRepository.save(it)</span>
+<span class="nc" id="L71">        }</span>
+<span class="nc" id="L72">        return TeamComparision(</span>
+<span class="nc" id="L73">            Pair(</span>
+<span class="nc" id="L74">                teamAPerformance.meanPerformance.rating,</span>
+<span class="nc" id="L75">                teamBPerformance.meanPerformance.rating),</span>
+<span class="nc" id="L76">            teamAPerformance,</span>
+<span class="nc" id="L77">            teamBPerformance</span>
+        )
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>
