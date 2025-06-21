@@ -173,48 +173,61 @@ import java.time.Duration
 <span class="nc" id="L173">        val teamUrl = findTeamUrl(teamName)</span>
 <span class="nc" id="L174">        driver.get(teamUrl)</span>
 
-<span class="nc" id="L176">        val wait = WebDriverWait(driver, Duration.ofSeconds(10))</span>
+<span class="nc" id="L176">        val wait = WebDriverWait(driver, Duration.ofSeconds(20))</span>
 
 <span class="nc" id="L178">        val tournamentPerformances = mutableListOf&lt;TournamentPerformance&gt;()</span>
 <span class="nc" id="L179">        var meanPerformance: TournamentPerformance? = null</span>
 
 <span class="nc" id="L181">        try {</span>
-<span class="nc" id="L182">            wait.until(ExpectedConditions.presenceOfElementLocated(By.id(&quot;top-team-stats-summary-content&quot;)))</span>
+            // Esperar a que el contenedor principal del tbody esté presente
+<span class="nc" id="L183">            wait.until(ExpectedConditions.presenceOfElementLocated(By.id(&quot;top-team-stats-summary-content&quot;)))</span>
 
-<span class="nc" id="L184">            val tableBody = driver.findElement(By.id(&quot;top-team-stats-summary-content&quot;))</span>
-<span class="nc" id="L185">            val rows = tableBody.findElements(By.tagName(&quot;tr&quot;))</span>
+            // Esperar que la celda con &quot;Total / Average&quot; sea visible.
+<span class="nc" id="L186">            val totalAverageRowLocator = By.xpath(&quot;//tbody[@id='top-team-stats-summary-content']/tr[td[1]/strong[contains(text(), 'Total / Average')]]&quot;)</span>
+<span class="nc" id="L187">            wait.until(ExpectedConditions.visibilityOfElementLocated(totalAverageRowLocator))</span>
 
-<span class="nc bnc" id="L187" title="All 2 branches missed.">            if (rows.isEmpty()) {</span>
-<span class="nc" id="L188">                throw ResourceNotFoundException(&quot;No se encontraron filas de rendimiento en la tabla de resumen del equipo.&quot;)</span>
+
+<span class="nc" id="L190">            val tableBody = driver.findElement(By.id(&quot;top-team-stats-summary-content&quot;))</span>
+<span class="nc" id="L191">            val rows = tableBody.findElements(By.tagName(&quot;tr&quot;))</span>
+
+<span class="nc bnc" id="L193" title="All 2 branches missed.">            if (rows.isEmpty()) {</span>
+<span class="nc" id="L194">                throw ResourceNotFoundException(&quot;No se encontraron filas de rendimiento en la tabla de resumen del equipo, incluso después de esperar la fila 'Total / Average'.&quot;)</span>
             }
 
-<span class="nc bnc" id="L191" title="All 2 branches missed.">            for (row in rows) {</span>
-<span class="nc" id="L192">                try {</span>
-<span class="nc" id="L193">                    val performance = extractPerformanceFromRow(row)</span>
-<span class="nc bnc" id="L194" title="All 2 branches missed.">                    if (performance.tournament == &quot;Total / Average&quot;) {</span>
-<span class="nc" id="L195">                        meanPerformance = performance</span>
+<span class="nc bnc" id="L197" title="All 2 branches missed.">            for (row in rows) {</span>
+<span class="nc" id="L198">                try {</span>
+<span class="nc" id="L199">                    val performance = extractPerformanceFromRow(row)</span>
+<span class="nc bnc" id="L200" title="All 2 branches missed.">                    if (performance.tournament!!.trim() == &quot;Total / Average&quot;) {</span>
+<span class="nc" id="L201">                        meanPerformance = performance</span>
                     } else {
-<span class="nc" id="L197">                        tournamentPerformances.add(performance)</span>
+<span class="nc" id="L203">                        tournamentPerformances.add(performance)</span>
                     }
-<span class="nc" id="L199">                } catch (e: Exception) {</span>
-<span class="nc" id="L200">                    throw ResourceNotFoundException(&quot;Error al procesar la fila de rendimiento del equipo: ${e.message}. Fila: ${row.text.substring(0,</span>
-<span class="nc" id="L201">                        row.text.length.coerceAtMost(100)</span>
-                    )}...&quot;)
+<span class="nc" id="L205">                } catch (e: Exception) {</span>
+<span class="nc" id="L206">                    throw ResourceNotFoundException(&quot;Error al procesar la fila de rendimiento del equipo: ${e.message}. Fila: ${row.text.substring(0, Math.min(row.text.length, 100))}...&quot;)</span>
                 }
             }
 
-<span class="nc bnc" id="L206" title="All 2 branches missed.">            if (meanPerformance == null) {</span>
-<span class="nc" id="L207">                throw ResourceNotFoundException(&quot;No se encontró la fila de 'Total / Average' para el rendimiento del equipo '$teamName'.&quot;)</span>
+<span class="nc bnc" id="L210" title="All 2 branches missed.">            if (meanPerformance == null) {</span>
+<span class="nc" id="L211">                throw ResourceNotFoundException(&quot;No se encontró la fila de 'Total / Average' después de cargar la tabla para el equipo '$teamName'.&quot;)</span>
             }
 
-<span class="nc" id="L210">            return TeamPerformance(</span>
-<span class="nc" id="L211">                teamName = teamName,</span>
-<span class="nc" id="L212">                tournamentPerformances = tournamentPerformances,</span>
-<span class="nc" id="L213">                meanPerformance = meanPerformance</span>
+<span class="nc" id="L214">            return TeamPerformance(</span>
+<span class="nc" id="L215">                teamName = teamName,</span>
+<span class="nc" id="L216">                tournamentPerformances = tournamentPerformances,</span>
+<span class="nc" id="L217">                meanPerformance = meanPerformance!!</span>
             )
-<span class="nc" id="L215">        } catch (e: Exception) {</span>
-<span class="nc" id="L216">            throw ResourceNotFoundException(&quot;No se pudo cargar la información de rendimiento para el equipo '$teamName'. Error: ${e.message}&quot;)</span>
+<span class="nc" id="L219">        } catch (e: Exception) {</span>
+            // --- CAMBIO CLAVE AQUÍ: Imprimir el pageSource en caso de error ---
+<span class="nc" id="L221">            System.err.println(&quot;--- INICIO DEL DOM EN EL MOMENTO DEL ERROR ---&quot;)</span>
+<span class="nc" id="L222">            System.err.println(driver.pageSource)</span>
+<span class="nc" id="L223">            System.err.println(&quot;--- FIN DEL DOM EN EL MOMENTO DEL ERROR ---&quot;)</span>
+            // -------------------------------------------------------------
+<span class="nc" id="L225">            throw ResourceNotFoundException(&quot;No se pudo cargar la información de rendimiento para el equipo '$teamName'. Error: ${e.message}&quot;)</span>
+        } finally {
+            // Es una buena práctica cerrar el driver cuando terminamos con él
+<span class="nc" id="L228">            driver.quit() // Descomentar esto si quieres que el driver se cierre después de cada llamada.</span>
+            // Si lo reutilizas para múltiples llamadas, no lo cierres aquí.
         }
     }
-<span class="fc" id="L219">}</span>
+<span class="fc" id="L232">}</span>
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>
