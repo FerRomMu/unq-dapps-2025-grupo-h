@@ -61,18 +61,18 @@ import unq.dda.grupoh.webservice.WhoScoreWebService
     }
 
     fun compareTeams(teamA: String, teamB: String): TeamComparision {
-<span class="nc bnc" id="L64" title="All 2 branches missed.">        val teamAPerformance = teamFeaturesRepository.findByTeamName(teamA) ?:</span>
-<span class="nc" id="L65">        whoScoreWebService.findTeamFeatures(teamA).also {</span>
-<span class="nc" id="L66">            teamFeaturesRepository.save(it)</span>
-<span class="nc" id="L67">        }</span>
-<span class="nc bnc" id="L68" title="All 2 branches missed.">        val teamBPerformance = teamFeaturesRepository.findByTeamName(teamB) ?:</span>
-<span class="nc" id="L69">        whoScoreWebService.findTeamFeatures(teamB).also {</span>
-<span class="nc" id="L70">            teamFeaturesRepository.save(it)</span>
-<span class="nc" id="L71">        }</span>
+<span class="fc bfc" id="L64" title="All 2 branches covered.">        val teamAPerformance = teamFeaturesRepository.findByTeamName(teamA) ?:</span>
+<span class="fc" id="L65">        whoScoreWebService.findTeamFeatures(teamA).also {</span>
+<span class="fc" id="L66">            teamFeaturesRepository.save(it)</span>
+<span class="fc" id="L67">        }</span>
+<span class="fc bfc" id="L68" title="All 2 branches covered.">        val teamBPerformance = teamFeaturesRepository.findByTeamName(teamB) ?:</span>
+<span class="fc" id="L69">        whoScoreWebService.findTeamFeatures(teamB).also {</span>
+<span class="fc" id="L70">            teamFeaturesRepository.save(it)</span>
+<span class="fc" id="L71">        }</span>
 
-<span class="nc" id="L73">        return TeamComparision(</span>
-<span class="nc" id="L74">            teamAPerformance,</span>
-<span class="nc" id="L75">            teamBPerformance</span>
+<span class="fc" id="L73">        return TeamComparision(</span>
+<span class="fc" id="L74">            teamAPerformance,</span>
+<span class="fc" id="L75">            teamBPerformance</span>
         )
     }
 }
