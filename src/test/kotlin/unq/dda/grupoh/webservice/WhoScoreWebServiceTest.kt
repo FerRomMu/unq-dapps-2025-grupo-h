@@ -37,6 +37,7 @@ class WhoScoreWebServiceTest {
     val iconizeCss: String = "div.iconize"
     val levelSpanCss: String = "span[class^='level']"
     val listItemCharacterCss: String = "li.character"
+    val testTeamstr: String = "Test Team"
 
     @Test
     fun shouldCorrectlyRetrievePlayersFromWebService() {
@@ -209,9 +210,9 @@ class WhoScoreWebServiceTest {
 
         val service = WhoScoreWebService(driver)
 
-        val result = service.findTeamFeatures("Test Team")
+        val result = service.findTeamFeatures(testTeamstr)
 
-        assertEquals("Test Team", result.teamName)
+        assertEquals(testTeamstr, result.teamName)
         assertEquals(2, result.strengths.size)
         assertEquals("Strong Passing", result.strengths[0].name)
         assertEquals("Strong", result.strengths[0].value)
@@ -246,7 +247,7 @@ class WhoScoreWebServiceTest {
         val service = WhoScoreWebService(driver)
 
         val exception = assertThrows<ResourceNotFoundException> {
-            service.findTeamFeatures("Test Team")
+            service.findTeamFeatures(testTeamstr)
         }
         assertTrue(exception.message!!.contains("No se pudieron cargar las características para el equipo 'Test Team'."))
     }
@@ -277,9 +278,9 @@ class WhoScoreWebServiceTest {
 
         val service = WhoScoreWebService(driver)
 
-        val result = service.findTeamFeatures("Test Team")
+        val result = service.findTeamFeatures(testTeamstr)
 
-        assertEquals("Test Team", result.teamName)
+        assertEquals(testTeamstr, result.teamName)
         assertTrue(result.strengths.isEmpty())
         assertTrue(result.weaknesses.isEmpty())
         assertTrue(result.styleOfPlay.isEmpty())
