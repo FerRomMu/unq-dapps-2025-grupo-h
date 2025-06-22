@@ -80,8 +80,8 @@ import java.time.Duration
 <span class="fc" id="L80">        val teamLink: WebElement? = try {</span>
 <span class="fc" id="L81">            wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(&quot;.search-result table tbody tr:nth-of-type(2) td a&quot;)))</span>
 <span class="fc" id="L82">            driver.findElement(By.cssSelector(&quot;.search-result table tbody tr:nth-of-type(2) td a&quot;))</span>
-<span class="nc" id="L83">        } catch (e: Exception) {</span>
-<span class="nc" id="L84">            throw ResourceNotFoundException(&quot;No se encontró el equipo '$teamName' o su URL en los resultados de búsqueda.&quot;)</span>
+<span class="fc" id="L83">        } catch (e: Exception) {</span>
+<span class="fc" id="L84">            throw ResourceNotFoundException(&quot;No se encontró el equipo '$teamName' o su URL en los resultados de búsqueda.&quot;)</span>
         }
 
 <span class="pc bpc" id="L87" title="1 of 2 branches missed.">        val fullTeamUrl = teamLink?.getAttribute(&quot;href&quot;)</span>
@@ -129,54 +129,54 @@ import java.time.Duration
     }
 
     fun findTeamFeatures(teamName: String): TeamFeatures {
-<span class="nc" id="L132">        val teamUrl = findTeamUrl(teamName) // Reutilizamos la lógica para obtener la URL del equipo</span>
-<span class="nc" id="L133">        driver.get(teamUrl) // Navegamos a la página del equipo</span>
+<span class="fc" id="L132">        val teamUrl = findTeamUrl(teamName) // Reutilizamos la lógica para obtener la URL del equipo</span>
+<span class="fc" id="L133">        driver.get(teamUrl) // Navegamos a la página del equipo</span>
 
-<span class="nc" id="L135">        val wait = WebDriverWait(driver, Duration.ofSeconds(10))</span>
+<span class="fc" id="L135">        val wait = WebDriverWait(driver, Duration.ofSeconds(10))</span>
 
-<span class="nc" id="L137">        val strengthsList = mutableListOf&lt;Feature&gt;()</span>
-<span class="nc" id="L138">        val weaknessesList = mutableListOf&lt;Feature&gt;()</span>
-<span class="nc" id="L139">        val styleOfPlayList = mutableListOf&lt;Feature&gt;()</span>
+<span class="fc" id="L137">        val strengthsList = mutableListOf&lt;Feature&gt;()</span>
+<span class="fc" id="L138">        val weaknessesList = mutableListOf&lt;Feature&gt;()</span>
+<span class="fc" id="L139">        val styleOfPlayList = mutableListOf&lt;Feature&gt;()</span>
 
-<span class="nc" id="L141">        try {</span>
-<span class="nc" id="L142">            wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(&quot;div.sws-content.character-card.singular&quot;)))</span>
+<span class="fc" id="L141">        try {</span>
+<span class="fc" id="L142">            wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(&quot;div.sws-content.character-card.singular&quot;)))</span>
 
             // --- Extraer Fortalezas ---
-<span class="nc" id="L145">            val strengthsContainer = driver.findElement(By.cssSelector(&quot;div.sws-content.character-card.singular div.strengths div.grid&quot;))</span>
-<span class="nc" id="L146">            val strengthElements = strengthsContainer.findElements(By.cssSelector(&quot;div.character&quot;))</span>
-<span class="nc bnc" id="L147" title="All 2 branches missed.">            for (element in strengthElements) {</span>
-<span class="nc" id="L148">                val name = element.findElement(By.cssSelector(&quot;div.iconize&quot;)).text.trim()</span>
-<span class="nc" id="L149">                val value = element.findElement(By.cssSelector(&quot;span[class^='level']&quot;)).text.trim()</span>
-<span class="nc" id="L150">                strengthsList.add(Feature(name = name, value = value))</span>
+<span class="fc" id="L145">            val strengthsContainer = driver.findElement(By.cssSelector(&quot;div.sws-content.character-card.singular div.strengths div.grid&quot;))</span>
+<span class="fc" id="L146">            val strengthElements = strengthsContainer.findElements(By.cssSelector(&quot;div.character&quot;))</span>
+<span class="fc bfc" id="L147" title="All 2 branches covered.">            for (element in strengthElements) {</span>
+<span class="fc" id="L148">                val name = element.findElement(By.cssSelector(&quot;div.iconize&quot;)).text.trim()</span>
+<span class="fc" id="L149">                val value = element.findElement(By.cssSelector(&quot;span[class^='level']&quot;)).text.trim()</span>
+<span class="fc" id="L150">                strengthsList.add(Feature(name = name, value = value))</span>
             }
 
             // --- Extraer Debilidades ---
-<span class="nc" id="L154">            val weaknessesContainer = driver.findElement(By.cssSelector(&quot;div.sws-content.character-card.singular div.weaknesses div.grid&quot;))</span>
-<span class="nc" id="L155">            val weaknessElements = weaknessesContainer.findElements(By.cssSelector(&quot;div.character&quot;))</span>
-<span class="nc bnc" id="L156" title="All 2 branches missed.">            for (element in weaknessElements) {</span>
-<span class="nc" id="L157">                val name = element.findElement(By.cssSelector(&quot;div.iconize&quot;)).text.trim()</span>
-<span class="nc" id="L158">                val value = element.findElement(By.cssSelector(&quot;span[class^='level']&quot;)).text.trim()</span>
-<span class="nc" id="L159">                weaknessesList.add(Feature(name = name, value = value))</span>
+<span class="fc" id="L154">            val weaknessesContainer = driver.findElement(By.cssSelector(&quot;div.sws-content.character-card.singular div.weaknesses div.grid&quot;))</span>
+<span class="fc" id="L155">            val weaknessElements = weaknessesContainer.findElements(By.cssSelector(&quot;div.character&quot;))</span>
+<span class="fc bfc" id="L156" title="All 2 branches covered.">            for (element in weaknessElements) {</span>
+<span class="fc" id="L157">                val name = element.findElement(By.cssSelector(&quot;div.iconize&quot;)).text.trim()</span>
+<span class="fc" id="L158">                val value = element.findElement(By.cssSelector(&quot;span[class^='level']&quot;)).text.trim()</span>
+<span class="fc" id="L159">                weaknessesList.add(Feature(name = name, value = value))</span>
             }
 
             // --- Extraer Estilo de Juego ---
-<span class="nc" id="L163">            val styleOfPlayContainer = driver.findElement(By.cssSelector(&quot;div.sws-content.character-card.singular div.style ul&quot;))</span>
-<span class="nc" id="L164">            val styleOfPlayElements = styleOfPlayContainer.findElements(By.cssSelector(&quot;li.character&quot;))</span>
-<span class="nc bnc" id="L165" title="All 2 branches missed.">            for (element in styleOfPlayElements) {</span>
+<span class="fc" id="L163">            val styleOfPlayContainer = driver.findElement(By.cssSelector(&quot;div.sws-content.character-card.singular div.style ul&quot;))</span>
+<span class="fc" id="L164">            val styleOfPlayElements = styleOfPlayContainer.findElements(By.cssSelector(&quot;li.character&quot;))</span>
+<span class="fc bfc" id="L165" title="All 2 branches covered.">            for (element in styleOfPlayElements) {</span>
                 // Para el estilo de juego, solo hay un nombre, no un &quot;valor&quot; Strong/Weak, así que el 'value' es nulo.
-<span class="nc" id="L167">                val name = element.text.trim()</span>
-<span class="nc" id="L168">                styleOfPlayList.add(Feature(name = name))</span>
+<span class="fc" id="L167">                val name = element.text.trim()</span>
+<span class="fc" id="L168">                styleOfPlayList.add(Feature(name = name))</span>
             }
 
-<span class="nc" id="L171">        } catch (e: Exception) {</span>
-<span class="nc" id="L172">            throw ResourceNotFoundException(&quot;No se pudieron cargar las características para el equipo '$teamName'. Error: ${e.message}&quot;)</span>
+<span class="fc" id="L171">        } catch (e: Exception) {</span>
+<span class="fc" id="L172">            throw ResourceNotFoundException(&quot;No se pudieron cargar las características para el equipo '$teamName'. Error: ${e.message}&quot;)</span>
         }
 
-<span class="nc" id="L175">        return TeamFeatures(</span>
-<span class="nc" id="L176">            teamName = teamName,</span>
-<span class="nc" id="L177">            strengths = strengthsList,</span>
-<span class="nc" id="L178">            weaknesses = weaknessesList,</span>
-<span class="nc" id="L179">            styleOfPlay = styleOfPlayList</span>
+<span class="fc" id="L175">        return TeamFeatures(</span>
+<span class="fc" id="L176">            teamName = teamName,</span>
+<span class="fc" id="L177">            strengths = strengthsList,</span>
+<span class="fc" id="L178">            weaknesses = weaknessesList,</span>
+<span class="fc" id="L179">            styleOfPlay = styleOfPlayList</span>
         )
     }
 <span class="fc" id="L182">}</span>
