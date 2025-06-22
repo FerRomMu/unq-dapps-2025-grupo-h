@@ -5,10 +5,12 @@ import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.*
 import unq.dda.grupoh.exceptions.ResourceNotFoundException
+import unq.dda.grupoh.model.Feature
 import unq.dda.grupoh.webservice.FootballDataWebService
 import unq.dda.grupoh.model.Match
 import unq.dda.grupoh.model.Player
 import unq.dda.grupoh.model.Team
+import unq.dda.grupoh.model.TeamFeatures
 import unq.dda.grupoh.repository.TeamFeaturesRepository
 import unq.dda.grupoh.repository.TeamRepository
 import unq.dda.grupoh.webservice.WhoScoreWebService
@@ -20,6 +22,8 @@ class TeamServiceTest {
     private val whoScoreWebService: WhoScoreWebService = mock()
     private val teamFeaturesRepository: TeamFeaturesRepository = mock()
     private val teamService = TeamService(teamRepository, teamFeaturesRepository, footballDataService, whoScoreWebService)
+    val teamAstr = "TeamA"
+    val teamBstr = "TeamB"
 
     @Test
     fun getTeamReturnsTeamFromRepositoryIfFound() {
@@ -211,7 +215,73 @@ class TeamServiceTest {
 
         assertEquals(players, result)
         verify(teamRepository).findByName(teamName)
-        verifyNoInteractions(footballDataService) // This ensures the branch is not taken
-        verifyNoMoreInteractions(teamRepository) // To ensure saveOrUpdateByName is not called
+        verifyNoInteractions(footballDataService)
+        verifyNoMoreInteractions(teamRepository)
+    }
+
+    @Test
+    fun compareTeamsReturnsTeamComparisonWithFeaturesFromRepositoryIfFound() {
+        val teamAName = teamAstr
+        val teamBName = teamBstr
+        val teamAFeatures = TeamFeatures(teamName = teamAName, strengths = mutableListOf(Feature("Passing", "Strong")))
+        val teamBFeatures = TeamFeatures(teamName = teamBName, weaknesses = mutableListOf(Feature("Defense", "Weak")))
+
+        whenever(teamFeaturesRepository.findByTeamName(teamAName)).thenReturn(teamAFeatures)
+        whenever(teamFeaturesRepository.findByTeamName(teamBName)).thenReturn(teamBFeatures)
+
+        val result = teamService.compareTeams(teamAName, teamBName)
+
+        assertEquals(teamAFeatures, result.teamAPerformance)
+        assertEquals(teamBFeatures, result.teamBPerformance)
+        verify(teamFeaturesRepository).findByTeamName(teamAName)
+        verify(teamFeaturesRepository).findByTeamName(teamBName)
+        verifyNoInteractions(whoScoreWebService)
+    }
+
+    @Test
+    fun compareTeamsFetchesFromWhoScoreWebServiceAndSavesIfFeaturesNotFoundInRepository() {
+        val teamAName = teamAstr
+        val teamBName = teamBstr
+        val teamAFeaturesFetched = TeamFeatures(teamName = teamAName, strengths = mutableListOf(Feature("Shooting", "Very Strong")))
+        val teamBFeaturesFetched = TeamFeatures(teamName = teamBName, styleOfPlay = mutableListOf(Feature("Counter Attack")))
+
+        whenever(teamFeaturesRepository.findByTeamName(teamAName)).thenReturn(null)
+        whenever(teamFeaturesRepository.findByTeamName(teamBName)).thenReturn(null)
+        whenever(whoScoreWebService.findTeamFeatures(teamAName)).thenReturn(teamAFeaturesFetched)
+        whenever(whoScoreWebService.findTeamFeatures(teamBName)).thenReturn(teamBFeaturesFetched)
+        whenever(teamFeaturesRepository.save(any<TeamFeatures>())).thenAnswer { it.arguments[0] as TeamFeatures }
+
+        val result = teamService.compareTeams(teamAName, teamBName)
+
+        assertEquals(teamAFeaturesFetched, result.teamAPerformance)
+        assertEquals(teamBFeaturesFetched, result.teamBPerformance)
+        verify(whoScoreWebService).findTeamFeatures(teamAName)
+        verify(whoScoreWebService).findTeamFeatures(teamBName)
+        verify(teamFeaturesRepository).save(teamAFeaturesFetched)
+        verify(teamFeaturesRepository).save(teamBFeaturesFetched)
+    }
+
+    @Test
+    fun compareTeamsFetchesOneFromWhoScoreWebServiceAndLoadsOtherFromRepository() {
+        val teamAName = teamAstr
+        val teamBName = teamBstr
+        val teamAFeatures = TeamFeatures(teamName = teamAName, weaknesses = mutableListOf(Feature("Discipline", "Average")))
+        val teamBFeaturesFetched = TeamFeatures(teamName = teamBName, strengths = mutableListOf(Feature("Set-pieces", "Little Strong")))
+
+        whenever(teamFeaturesRepository.findByTeamName(teamAName)).thenReturn(teamAFeatures)
+        whenever(teamFeaturesRepository.findByTeamName(teamBName)).thenReturn(null)
+        whenever(whoScoreWebService.findTeamFeatures(teamBName)).thenReturn(teamBFeaturesFetched)
+        whenever(teamFeaturesRepository.save(any<TeamFeatures>())).thenAnswer { it.arguments[0] as TeamFeatures }
+
+        val result = teamService.compareTeams(teamAName, teamBName)
+
+        assertEquals(teamAFeatures, result.teamAPerformance)
+        assertEquals(teamBFeaturesFetched, result.teamBPerformance)
+        verify(teamFeaturesRepository).findByTeamName(teamAName)
+        verify(teamFeaturesRepository).findByTeamName(teamBName)
+        verify(whoScoreWebService).findTeamFeatures(teamBName)
+        verify(teamFeaturesRepository).save(teamBFeaturesFetched)
+        verify(whoScoreWebService, never()).findTeamFeatures(teamAName)
+        verify(teamFeaturesRepository, never()).save(teamAFeatures)
     }
 }
