@@ -8,14 +8,14 @@ import unq.dda.grupoh.webservice.FootballDataWebService
 import unq.dda.grupoh.model.Match
 import unq.dda.grupoh.model.Team
 import unq.dda.grupoh.model.TeamComparision
-import unq.dda.grupoh.repository.TeamPerformanceRepository
+import unq.dda.grupoh.repository.TeamFeaturesRepository
 import unq.dda.grupoh.repository.TeamRepository
 import unq.dda.grupoh.webservice.WhoScoreWebService
 
 <span class="fc" id="L15">@Service</span>
 <span class="fc" id="L16">class TeamService(</span>
 <span class="fc" id="L17">    private val teamRepository: TeamRepository,</span>
-<span class="fc" id="L18">    private val teamPerformanceRepository: TeamPerformanceRepository,</span>
+<span class="fc" id="L18">    private val teamFeaturesRepository: TeamFeaturesRepository,</span>
 <span class="fc" id="L19">    private val footballDataService: FootballDataWebService,</span>
 <span class="fc" id="L20">    private val whoScoreWebService: WhoScoreWebService</span>
 ) {
@@ -61,20 +61,18 @@ import unq.dda.grupoh.webservice.WhoScoreWebService
     }
 
     fun compareTeams(teamA: String, teamB: String): TeamComparision {
-<span class="nc bnc" id="L64" title="All 2 branches missed.">        val teamAPerformance = teamPerformanceRepository.findByTeamName(teamA) ?:</span>
-<span class="nc" id="L65">        whoScoreWebService.findTeamPerformanceByName(teamA).also {</span>
-<span class="nc" id="L66">            teamPerformanceRepository.save(it)</span>
+<span class="nc bnc" id="L64" title="All 2 branches missed.">        val teamAPerformance = teamFeaturesRepository.findByTeamName(teamA) ?:</span>
+<span class="nc" id="L65">        whoScoreWebService.findTeamFeatures(teamA).also {</span>
+<span class="nc" id="L66">            teamFeaturesRepository.save(it)</span>
 <span class="nc" id="L67">        }</span>
-<span class="nc bnc" id="L68" title="All 2 branches missed.">        val teamBPerformance = teamPerformanceRepository.findByTeamName(teamA) ?:</span>
-<span class="nc" id="L69">        whoScoreWebService.findTeamPerformanceByName(teamB).also {</span>
-<span class="nc" id="L70">            teamPerformanceRepository.save(it)</span>
+<span class="nc bnc" id="L68" title="All 2 branches missed.">        val teamBPerformance = teamFeaturesRepository.findByTeamName(teamB) ?:</span>
+<span class="nc" id="L69">        whoScoreWebService.findTeamFeatures(teamB).also {</span>
+<span class="nc" id="L70">            teamFeaturesRepository.save(it)</span>
 <span class="nc" id="L71">        }</span>
-<span class="nc" id="L72">        return TeamComparision(</span>
-<span class="nc" id="L73">            Pair(</span>
-<span class="nc" id="L74">                teamAPerformance.meanPerformance.rating,</span>
-<span class="nc" id="L75">                teamBPerformance.meanPerformance.rating),</span>
-<span class="nc" id="L76">            teamAPerformance,</span>
-<span class="nc" id="L77">            teamBPerformance</span>
+
+<span class="nc" id="L73">        return TeamComparision(</span>
+<span class="nc" id="L74">            teamAPerformance,</span>
+<span class="nc" id="L75">            teamBPerformance</span>
         )
     }
 }

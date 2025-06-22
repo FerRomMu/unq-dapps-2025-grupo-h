@@ -9,9 +9,9 @@ import org.springframework.stereotype.Service
 import org.openqa.selenium.support.ui.ExpectedConditions
 import org.openqa.selenium.support.ui.WebDriverWait
 import unq.dda.grupoh.exceptions.ResourceNotFoundException
+import unq.dda.grupoh.model.Feature
 import unq.dda.grupoh.model.Player
-import unq.dda.grupoh.model.TeamPerformance
-import unq.dda.grupoh.model.TournamentPerformance
+import unq.dda.grupoh.model.TeamFeatures
 import java.time.Duration
 
 <span class="fc" id="L17">@Service</span>
@@ -71,163 +71,113 @@ import java.time.Duration
         )
     }
 
-    private fun extractPerformanceFromRow(row: WebElement): TournamentPerformance {
-<span class="nc" id="L75">        val cells = row.findElements(By.tagName(&quot;td&quot;))</span>
-
-<span class="nc bnc" id="L77" title="All 2 branches missed.">        if (cells.size &lt; 9) {</span>
-<span class="nc" id="L78">            throw IllegalArgumentException(&quot;La fila no tiene suficientes celdas para extraer el rendimiento del torneo.&quot;)</span>
-        }
-
-<span class="nc" id="L81">        val tournament = cells[0].text.trim()</span>
-<span class="nc" id="L82">        val apps = cells[1].text.toIntOrNull()</span>
-<span class="nc" id="L83">        val goals = cells[2].text.toIntOrNull()</span>
-<span class="nc" id="L84">        val shotsPerGame = cells[3].text.toDoubleOrNull()</span>
-
-<span class="nc" id="L86">        var yellowCards: Int? = null</span>
-<span class="nc" id="L87">        var redCards: Int? = null</span>
-<span class="nc" id="L88">        try {</span>
-<span class="nc" id="L89">            val disciplineSpan = cells[4].findElement(By.cssSelector(&quot;span.yellow-card-box&quot;))</span>
-<span class="nc" id="L90">            yellowCards = disciplineSpan.text.toIntOrNull()</span>
-<span class="nc" id="L91">            val redCardSpan = cells[4].findElement(By.cssSelector(&quot;span.red-card-box&quot;))</span>
-<span class="nc" id="L92">            redCards = redCardSpan.text.toIntOrNull()</span>
-<span class="nc" id="L93">        } catch (e: org.openqa.selenium.NoSuchElementException) {</span>
-        }
-
-<span class="nc" id="L96">        val possessionPercentage = cells[5].text.toDoubleOrNull()</span>
-<span class="nc" id="L97">        val passSuccessPercentage = cells[6].text.toDoubleOrNull()</span>
-<span class="nc" id="L98">        val aerialsWonPerGame = cells[7].text.toDoubleOrNull()</span>
-<span class="nc" id="L99">        val rating = cells[8].text.toDoubleOrNull()</span>
-
-<span class="nc" id="L101">        return TournamentPerformance(</span>
-<span class="nc" id="L102">            tournament = tournament,</span>
-<span class="nc" id="L103">            apps = apps,</span>
-<span class="nc" id="L104">            goals = goals,</span>
-<span class="nc" id="L105">            shotsPerGame = shotsPerGame,</span>
-<span class="nc" id="L106">            yellowCards = yellowCards,</span>
-<span class="nc" id="L107">            redCards = redCards,</span>
-<span class="nc" id="L108">            possessionPercentage = possessionPercentage,</span>
-<span class="nc" id="L109">            passSuccessPercentage = passSuccessPercentage,</span>
-<span class="nc" id="L110">            aerialsWonPerGame = aerialsWonPerGame,</span>
-<span class="nc" id="L111">            rating = rating</span>
-        )
-    }
-
     private fun findTeamUrl(teamName: String): String {
-<span class="fc" id="L116">        val searchUrl = &quot;https://es.whoscored.com/search/?t=${teamName.replace(&quot; &quot;, &quot;+&quot;)}&quot;</span>
-<span class="fc" id="L117">        driver.get(searchUrl)</span>
+<span class="fc" id="L75">        val searchUrl = &quot;https://es.whoscored.com/search/?t=${teamName.replace(&quot; &quot;, &quot;+&quot;)}&quot;</span>
+<span class="fc" id="L76">        driver.get(searchUrl)</span>
 
-<span class="fc" id="L119">        val wait = WebDriverWait(driver, Duration.ofSeconds(5))</span>
+<span class="fc" id="L78">        val wait = WebDriverWait(driver, Duration.ofSeconds(5))</span>
 
-<span class="fc" id="L121">        val teamLink: WebElement? = try {</span>
-<span class="fc" id="L122">            wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(&quot;.search-result table tbody tr:nth-of-type(2) td a&quot;)))</span>
-<span class="fc" id="L123">            driver.findElement(By.cssSelector(&quot;.search-result table tbody tr:nth-of-type(2) td a&quot;))</span>
-<span class="nc" id="L124">        } catch (e: Exception) {</span>
-<span class="nc" id="L125">            throw ResourceNotFoundException(&quot;No se encontró el equipo '$teamName' o su URL en los resultados de búsqueda.&quot;)</span>
+<span class="fc" id="L80">        val teamLink: WebElement? = try {</span>
+<span class="fc" id="L81">            wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(&quot;.search-result table tbody tr:nth-of-type(2) td a&quot;)))</span>
+<span class="fc" id="L82">            driver.findElement(By.cssSelector(&quot;.search-result table tbody tr:nth-of-type(2) td a&quot;))</span>
+<span class="nc" id="L83">        } catch (e: Exception) {</span>
+<span class="nc" id="L84">            throw ResourceNotFoundException(&quot;No se encontró el equipo '$teamName' o su URL en los resultados de búsqueda.&quot;)</span>
         }
 
-<span class="pc bpc" id="L128" title="1 of 2 branches missed.">        val fullTeamUrl = teamLink?.getAttribute(&quot;href&quot;)</span>
+<span class="pc bpc" id="L87" title="1 of 2 branches missed.">        val fullTeamUrl = teamLink?.getAttribute(&quot;href&quot;)</span>
 
-<span class="pc bpc" id="L130" title="3 of 6 branches missed.">        if (fullTeamUrl.isNullOrEmpty()) {</span>
-<span class="nc" id="L131">            throw ResourceNotFoundException(&quot;No se encontró el equipo '$teamName' o su URL en los resultados de búsqueda.&quot;)</span>
+<span class="pc bpc" id="L89" title="3 of 6 branches missed.">        if (fullTeamUrl.isNullOrEmpty()) {</span>
+<span class="nc" id="L90">            throw ResourceNotFoundException(&quot;No se encontró el equipo '$teamName' o su URL en los resultados de búsqueda.&quot;)</span>
         }
 
-<span class="pc bpc" id="L134" title="1 of 2 branches missed.">        return if (fullTeamUrl.startsWith(&quot;http&quot;)) {</span>
-<span class="fc" id="L135">            fullTeamUrl</span>
+<span class="pc bpc" id="L93" title="1 of 2 branches missed.">        return if (fullTeamUrl.startsWith(&quot;http&quot;)) {</span>
+<span class="fc" id="L94">            fullTeamUrl</span>
         } else {
-<span class="nc" id="L137">            &quot;https://es.whoscored.com$fullTeamUrl&quot;</span>
+<span class="nc" id="L96">            &quot;https://es.whoscored.com$fullTeamUrl&quot;</span>
         }
     }
 
     fun findPlayersByTeamName(name: String): List&lt;Player&gt; {
-<span class="fc" id="L142">        val teamUrl = findTeamUrl(name)</span>
-<span class="fc" id="L143">        driver.get(teamUrl)</span>
+<span class="fc" id="L101">        val teamUrl = findTeamUrl(name)</span>
+<span class="fc" id="L102">        driver.get(teamUrl)</span>
 
-<span class="fc" id="L145">        val players = mutableListOf&lt;Player&gt;()</span>
-<span class="fc" id="L146">        val wait = WebDriverWait(driver, Duration.ofSeconds(10))</span>
+<span class="fc" id="L104">        val players = mutableListOf&lt;Player&gt;()</span>
+<span class="fc" id="L105">        val wait = WebDriverWait(driver, Duration.ofSeconds(10))</span>
 
-<span class="fc" id="L148">        try {</span>
-<span class="fc" id="L149">            wait.until(ExpectedConditions.presenceOfElementLocated(By.id(&quot;player-table-statistics-body&quot;)))</span>
+<span class="fc" id="L107">        try {</span>
+<span class="fc" id="L108">            wait.until(ExpectedConditions.presenceOfElementLocated(By.id(&quot;player-table-statistics-body&quot;)))</span>
 
-<span class="fc" id="L151">            val playerRows = driver.findElements(By.cssSelector(&quot;#player-table-statistics-body tr&quot;))</span>
+<span class="fc" id="L110">            val playerRows = driver.findElements(By.cssSelector(&quot;#player-table-statistics-body tr&quot;))</span>
 
-<span class="pc bpc" id="L153" title="1 of 2 branches missed.">            if (playerRows.isEmpty()) {</span>
-<span class="nc" id="L154">                throw ResourceNotFoundException(&quot;No se encontraron jugadores en la tabla.&quot;)</span>
+<span class="pc bpc" id="L112" title="1 of 2 branches missed.">            if (playerRows.isEmpty()) {</span>
+<span class="nc" id="L113">                throw ResourceNotFoundException(&quot;No se encontraron jugadores en la tabla.&quot;)</span>
             }
 
-<span class="fc bfc" id="L157" title="All 2 branches covered.">            for (row in playerRows) {</span>
-<span class="fc" id="L158">                try {</span>
-<span class="fc" id="L159">                    val player = extractPlayerFromRow(row, name)</span>
-<span class="fc" id="L160">                    players.add(player)</span>
-<span class="nc" id="L161">                } catch (e: Exception) {</span>
-<span class="nc" id="L162">                    throw ResourceNotFoundException(&quot;Error al procesar la fila de un jugador: ${e.message}. Fila: ${row.text.substring(0, Math.min(row.text.length, 100))}...&quot;)</span>
+<span class="fc bfc" id="L116" title="All 2 branches covered.">            for (row in playerRows) {</span>
+<span class="fc" id="L117">                try {</span>
+<span class="fc" id="L118">                    val player = extractPlayerFromRow(row, name)</span>
+<span class="fc" id="L119">                    players.add(player)</span>
+<span class="nc" id="L120">                } catch (e: Exception) {</span>
+<span class="nc" id="L121">                    throw ResourceNotFoundException(&quot;Error al procesar la fila de un jugador: ${e.message}. Fila: ${row.text.substring(0, Math.min(row.text.length, 100))}...&quot;)</span>
                 }
             }
-<span class="fc" id="L165">        } catch (e: Exception) {</span>
-<span class="fc" id="L166">            throw ResourceNotFoundException(&quot;No se pudo cargar la tabla de jugadores para el equipo. Error: ${e.message}&quot;)</span>
+<span class="fc" id="L124">        } catch (e: Exception) {</span>
+<span class="fc" id="L125">            throw ResourceNotFoundException(&quot;No se pudo cargar la tabla de jugadores para el equipo. Error: ${e.message}&quot;)</span>
         }
 
-<span class="fc" id="L169">        return players</span>
+<span class="fc" id="L128">        return players</span>
     }
 
-    fun findTeamPerformanceByName(teamName: String): TeamPerformance {
-<span class="nc" id="L173">        val teamUrl = findTeamUrl(teamName)</span>
-<span class="nc" id="L174">        driver.get(teamUrl)</span>
+    fun findTeamFeatures(teamName: String): TeamFeatures {
+<span class="nc" id="L132">        val teamUrl = findTeamUrl(teamName) // Reutilizamos la lógica para obtener la URL del equipo</span>
+<span class="nc" id="L133">        driver.get(teamUrl) // Navegamos a la página del equipo</span>
 
-<span class="nc" id="L176">        val wait = WebDriverWait(driver, Duration.ofSeconds(20))</span>
+<span class="nc" id="L135">        val wait = WebDriverWait(driver, Duration.ofSeconds(10))</span>
 
-<span class="nc" id="L178">        val tournamentPerformances = mutableListOf&lt;TournamentPerformance&gt;()</span>
-<span class="nc" id="L179">        var meanPerformance: TournamentPerformance? = null</span>
+<span class="nc" id="L137">        val strengthsList = mutableListOf&lt;Feature&gt;()</span>
+<span class="nc" id="L138">        val weaknessesList = mutableListOf&lt;Feature&gt;()</span>
+<span class="nc" id="L139">        val styleOfPlayList = mutableListOf&lt;Feature&gt;()</span>
 
-<span class="nc" id="L181">        try {</span>
-            // Esperar a que el contenedor principal del tbody esté presente
-<span class="nc" id="L183">            wait.until(ExpectedConditions.presenceOfElementLocated(By.id(&quot;top-team-stats-summary-content&quot;)))</span>
+<span class="nc" id="L141">        try {</span>
+<span class="nc" id="L142">            wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(&quot;div.sws-content.character-card.singular&quot;)))</span>
 
-            // Esperar que la celda con &quot;Total / Average&quot; sea visible.
-<span class="nc" id="L186">            val totalAverageRowLocator = By.xpath(&quot;//tbody[@id='top-team-stats-summary-content']/tr[td[1]/strong[contains(text(), 'Total / Average')]]&quot;)</span>
-<span class="nc" id="L187">            wait.until(ExpectedConditions.visibilityOfElementLocated(totalAverageRowLocator))</span>
-
-
-<span class="nc" id="L190">            val tableBody = driver.findElement(By.id(&quot;top-team-stats-summary-content&quot;))</span>
-<span class="nc" id="L191">            val rows = tableBody.findElements(By.tagName(&quot;tr&quot;))</span>
-
-<span class="nc bnc" id="L193" title="All 2 branches missed.">            if (rows.isEmpty()) {</span>
-<span class="nc" id="L194">                throw ResourceNotFoundException(&quot;No se encontraron filas de rendimiento en la tabla de resumen del equipo, incluso después de esperar la fila 'Total / Average'.&quot;)</span>
+            // --- Extraer Fortalezas ---
+<span class="nc" id="L145">            val strengthsContainer = driver.findElement(By.cssSelector(&quot;div.sws-content.character-card.singular div.strengths div.grid&quot;))</span>
+<span class="nc" id="L146">            val strengthElements = strengthsContainer.findElements(By.cssSelector(&quot;div.character&quot;))</span>
+<span class="nc bnc" id="L147" title="All 2 branches missed.">            for (element in strengthElements) {</span>
+<span class="nc" id="L148">                val name = element.findElement(By.cssSelector(&quot;div.iconize&quot;)).text.trim()</span>
+<span class="nc" id="L149">                val value = element.findElement(By.cssSelector(&quot;span[class^='level']&quot;)).text.trim()</span>
+<span class="nc" id="L150">                strengthsList.add(Feature(name = name, value = value))</span>
             }
 
-<span class="nc bnc" id="L197" title="All 2 branches missed.">            for (row in rows) {</span>
-<span class="nc" id="L198">                try {</span>
-<span class="nc" id="L199">                    val performance = extractPerformanceFromRow(row)</span>
-<span class="nc bnc" id="L200" title="All 2 branches missed.">                    if (performance.tournament!!.trim() == &quot;Total / Average&quot;) {</span>
-<span class="nc" id="L201">                        meanPerformance = performance</span>
-                    } else {
-<span class="nc" id="L203">                        tournamentPerformances.add(performance)</span>
-                    }
-<span class="nc" id="L205">                } catch (e: Exception) {</span>
-<span class="nc" id="L206">                    throw ResourceNotFoundException(&quot;Error al procesar la fila de rendimiento del equipo: ${e.message}. Fila: ${row.text.substring(0, Math.min(row.text.length, 100))}...&quot;)</span>
-                }
+            // --- Extraer Debilidades ---
+<span class="nc" id="L154">            val weaknessesContainer = driver.findElement(By.cssSelector(&quot;div.sws-content.character-card.singular div.weaknesses div.grid&quot;))</span>
+<span class="nc" id="L155">            val weaknessElements = weaknessesContainer.findElements(By.cssSelector(&quot;div.character&quot;))</span>
+<span class="nc bnc" id="L156" title="All 2 branches missed.">            for (element in weaknessElements) {</span>
+<span class="nc" id="L157">                val name = element.findElement(By.cssSelector(&quot;div.iconize&quot;)).text.trim()</span>
+<span class="nc" id="L158">                val value = element.findElement(By.cssSelector(&quot;span[class^='level']&quot;)).text.trim()</span>
+<span class="nc" id="L159">                weaknessesList.add(Feature(name = name, value = value))</span>
             }
 
-<span class="nc bnc" id="L210" title="All 2 branches missed.">            if (meanPerformance == null) {</span>
-<span class="nc" id="L211">                throw ResourceNotFoundException(&quot;No se encontró la fila de 'Total / Average' después de cargar la tabla para el equipo '$teamName'.&quot;)</span>
+            // --- Extraer Estilo de Juego ---
+<span class="nc" id="L163">            val styleOfPlayContainer = driver.findElement(By.cssSelector(&quot;div.sws-content.character-card.singular div.style ul&quot;))</span>
+<span class="nc" id="L164">            val styleOfPlayElements = styleOfPlayContainer.findElements(By.cssSelector(&quot;li.character&quot;))</span>
+<span class="nc bnc" id="L165" title="All 2 branches missed.">            for (element in styleOfPlayElements) {</span>
+                // Para el estilo de juego, solo hay un nombre, no un &quot;valor&quot; Strong/Weak, así que el 'value' es nulo.
+<span class="nc" id="L167">                val name = element.text.trim()</span>
+<span class="nc" id="L168">                styleOfPlayList.add(Feature(name = name))</span>
             }
 
-<span class="nc" id="L214">            return TeamPerformance(</span>
-<span class="nc" id="L215">                teamName = teamName,</span>
-<span class="nc" id="L216">                tournamentPerformances = tournamentPerformances,</span>
-<span class="nc" id="L217">                meanPerformance = meanPerformance!!</span>
-            )
-<span class="nc" id="L219">        } catch (e: Exception) {</span>
-            // --- CAMBIO CLAVE AQUÍ: Imprimir el pageSource en caso de error ---
-<span class="nc" id="L221">            System.err.println(&quot;--- INICIO DEL DOM EN EL MOMENTO DEL ERROR ---&quot;)</span>
-<span class="nc" id="L222">            System.err.println(driver.pageSource)</span>
-<span class="nc" id="L223">            System.err.println(&quot;--- FIN DEL DOM EN EL MOMENTO DEL ERROR ---&quot;)</span>
-            // -------------------------------------------------------------
-<span class="nc" id="L225">            throw ResourceNotFoundException(&quot;No se pudo cargar la información de rendimiento para el equipo '$teamName'. Error: ${e.message}&quot;)</span>
-        } finally {
-            // Es una buena práctica cerrar el driver cuando terminamos con él
-<span class="nc" id="L228">            driver.quit() // Descomentar esto si quieres que el driver se cierre después de cada llamada.</span>
-            // Si lo reutilizas para múltiples llamadas, no lo cierres aquí.
+<span class="nc" id="L171">        } catch (e: Exception) {</span>
+<span class="nc" id="L172">            throw ResourceNotFoundException(&quot;No se pudieron cargar las características para el equipo '$teamName'. Error: ${e.message}&quot;)</span>
         }
+
+<span class="nc" id="L175">        return TeamFeatures(</span>
+<span class="nc" id="L176">            teamName = teamName,</span>
+<span class="nc" id="L177">            strengths = strengthsList,</span>
+<span class="nc" id="L178">            weaknesses = weaknessesList,</span>
+<span class="nc" id="L179">            styleOfPlay = styleOfPlayList</span>
+        )
     }
-<span class="fc" id="L232">}</span>
+<span class="fc" id="L182">}</span>
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>
