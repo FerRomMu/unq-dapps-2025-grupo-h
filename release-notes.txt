@@ -1,0 +1,14 @@
+---------------------------------------------------------------------
+TAG entrega3.1
+---------------------------------------------------------------------
+NEW FEATURES:
+* Endpoint de comparación de equipos
+* Endpoint de rendimiento de jugador
+* Test de arquitectura
+* Aspecto de logguer
+* Configurados Actuator y Prometheus
+
+NOTES:
+
+KNOWN ISSUES
+* El servicio FootballDataWebService presenta inestabilidad en métodos como findTeamByName, causada por cambios en los endpoints gratuitos de la API externa, que dejaron de estar disponibles.
