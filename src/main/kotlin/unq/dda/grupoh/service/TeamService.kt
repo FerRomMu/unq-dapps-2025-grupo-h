@@ -8,14 +8,14 @@ import unq.dda.grupoh.webservice.FootballDataWebService
 import unq.dda.grupoh.model.Match
 import unq.dda.grupoh.model.Team
 import unq.dda.grupoh.model.TeamComparision
-import unq.dda.grupoh.repository.TeamPerformanceRepository
+import unq.dda.grupoh.repository.TeamFeaturesRepository
 import unq.dda.grupoh.repository.TeamRepository
 import unq.dda.grupoh.webservice.WhoScoreWebService
 
 @Service
 class TeamService(
     private val teamRepository: TeamRepository,
-    private val teamPerformanceRepository: TeamPerformanceRepository,
+    private val teamFeaturesRepository: TeamFeaturesRepository,
     private val footballDataService: FootballDataWebService,
     private val whoScoreWebService: WhoScoreWebService
 ) {
@@ -61,18 +61,16 @@ class TeamService(
     }
 
     fun compareTeams(teamA: String, teamB: String): TeamComparision {
-        val teamAPerformance = teamPerformanceRepository.findByTeamName(teamA) ?:
-        whoScoreWebService.findTeamPerformanceByName(teamA).also {
-            teamPerformanceRepository.save(it)
+        val teamAPerformance = teamFeaturesRepository.findByTeamName(teamA) ?:
+        whoScoreWebService.findTeamFeatures(teamA).also {
+            teamFeaturesRepository.save(it)
         }
-        val teamBPerformance = teamPerformanceRepository.findByTeamName(teamA) ?:
-        whoScoreWebService.findTeamPerformanceByName(teamB).also {
-            teamPerformanceRepository.save(it)
+        val teamBPerformance = teamFeaturesRepository.findByTeamName(teamB) ?:
+        whoScoreWebService.findTeamFeatures(teamB).also {
+            teamFeaturesRepository.save(it)
         }
+
         return TeamComparision(
-            Pair(
-                teamAPerformance.meanPerformance.rating,
-                teamBPerformance.meanPerformance.rating),
             teamAPerformance,
             teamBPerformance
         )

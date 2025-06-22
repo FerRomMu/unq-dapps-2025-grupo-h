@@ -1,7 +1,6 @@
 package unq.dda.grupoh.model
 
 data class TeamComparision (
-    val ratings: Pair<Double?, Double?>,
-    val teamAPerformance: TeamPerformance,
-    val teamBPerformance: TeamPerformance
+    val teamAPerformance: TeamFeatures,
+    val teamBPerformance: TeamFeatures
 )

@@ -9,9 +9,9 @@ import org.springframework.stereotype.Service
 import org.openqa.selenium.support.ui.ExpectedConditions
 import org.openqa.selenium.support.ui.WebDriverWait
 import unq.dda.grupoh.exceptions.ResourceNotFoundException
+import unq.dda.grupoh.model.Feature
 import unq.dda.grupoh.model.Player
-import unq.dda.grupoh.model.TeamPerformance
-import unq.dda.grupoh.model.TournamentPerformance
+import unq.dda.grupoh.model.TeamFeatures
 import java.time.Duration
 
 @Service
@@ -67,47 +67,6 @@ class WhoScoreWebService (
             passSuccessPercentage = passSuccessPercentage,
             aerialsWonPerGame = aerialsWonPerGame,
             manOfTheMatch = manOfTheMatch,
-            rating = rating
-        )
-    }
-
-    private fun extractPerformanceFromRow(row: WebElement): TournamentPerformance {
-        val cells = row.findElements(By.tagName("td"))
-
-        if (cells.size < 9) {
-            throw IllegalArgumentException("La fila no tiene suficientes celdas para extraer el rendimiento del torneo.")
-        }
-
-        val tournament = cells[0].text.trim()
-        val apps = cells[1].text.toIntOrNull()
-        val goals = cells[2].text.toIntOrNull()
-        val shotsPerGame = cells[3].text.toDoubleOrNull()
-
-        var yellowCards: Int? = null
-        var redCards: Int? = null
-        try {
-            val disciplineSpan = cells[4].findElement(By.cssSelector("span.yellow-card-box"))
-            yellowCards = disciplineSpan.text.toIntOrNull()
-            val redCardSpan = cells[4].findElement(By.cssSelector("span.red-card-box"))
-            redCards = redCardSpan.text.toIntOrNull()
-        } catch (e: org.openqa.selenium.NoSuchElementException) {
-        }
-
-        val possessionPercentage = cells[5].text.toDoubleOrNull()
-        val passSuccessPercentage = cells[6].text.toDoubleOrNull()
-        val aerialsWonPerGame = cells[7].text.toDoubleOrNull()
-        val rating = cells[8].text.toDoubleOrNull()
-
-        return TournamentPerformance(
-            tournament = tournament,
-            apps = apps,
-            goals = goals,
-            shotsPerGame = shotsPerGame,
-            yellowCards = yellowCards,
-            redCards = redCards,
-            possessionPercentage = possessionPercentage,
-            passSuccessPercentage = passSuccessPercentage,
-            aerialsWonPerGame = aerialsWonPerGame,
             rating = rating
         )
     }
@@ -169,64 +128,55 @@ class WhoScoreWebService (
         return players
     }
 
-    fun findTeamPerformanceByName(teamName: String): TeamPerformance {
-        val teamUrl = findTeamUrl(teamName)
-        driver.get(teamUrl)
+    fun findTeamFeatures(teamName: String): TeamFeatures {
+        val teamUrl = findTeamUrl(teamName) // Reutilizamos la lógica para obtener la URL del equipo
+        driver.get(teamUrl) // Navegamos a la página del equipo
 
-        val wait = WebDriverWait(driver, Duration.ofSeconds(20))
+        val wait = WebDriverWait(driver, Duration.ofSeconds(10))
 
-        val tournamentPerformances = mutableListOf<TournamentPerformance>()
-        var meanPerformance: TournamentPerformance? = null
+        val strengthsList = mutableListOf<Feature>()
+        val weaknessesList = mutableListOf<Feature>()
+        val styleOfPlayList = mutableListOf<Feature>()
 
         try {
-            // Esperar a que el contenedor principal del tbody esté presente
-            wait.until(ExpectedConditions.presenceOfElementLocated(By.id("top-team-stats-summary-content")))
+            wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("div.sws-content.character-card.singular")))
 
-            // Esperar que la celda con "Total / Average" sea visible.
-            val totalAverageRowLocator = By.xpath("//tbody[@id='top-team-stats-summary-content']/tr[td[1]/strong[contains(text(), 'Total / Average')]]")
-            wait.until(ExpectedConditions.visibilityOfElementLocated(totalAverageRowLocator))
-
-
-            val tableBody = driver.findElement(By.id("top-team-stats-summary-content"))
-            val rows = tableBody.findElements(By.tagName("tr"))
-
-            if (rows.isEmpty()) {
-                throw ResourceNotFoundException("No se encontraron filas de rendimiento en la tabla de resumen del equipo, incluso después de esperar la fila 'Total / Average'.")
+            // --- Extraer Fortalezas ---
+            val strengthsContainer = driver.findElement(By.cssSelector("div.sws-content.character-card.singular div.strengths div.grid"))
+            val strengthElements = strengthsContainer.findElements(By.cssSelector("div.character"))
+            for (element in strengthElements) {
+                val name = element.findElement(By.cssSelector("div.iconize")).text.trim()
+                val value = element.findElement(By.cssSelector("span[class^='level']")).text.trim()
+                strengthsList.add(Feature(name = name, value = value))
             }
 
-            for (row in rows) {
-                try {
-                    val performance = extractPerformanceFromRow(row)
-                    if (performance.tournament!!.trim() == "Total / Average") {
-                        meanPerformance = performance
-                    } else {
-                        tournamentPerformances.add(performance)
-                    }
-                } catch (e: Exception) {
-                    throw ResourceNotFoundException("Error al procesar la fila de rendimiento del equipo: ${e.message}. Fila: ${row.text.substring(0, Math.min(row.text.length, 100))}...")
-                }
+            // --- Extraer Debilidades ---
+            val weaknessesContainer = driver.findElement(By.cssSelector("div.sws-content.character-card.singular div.weaknesses div.grid"))
+            val weaknessElements = weaknessesContainer.findElements(By.cssSelector("div.character"))
+            for (element in weaknessElements) {
+                val name = element.findElement(By.cssSelector("div.iconize")).text.trim()
+                val value = element.findElement(By.cssSelector("span[class^='level']")).text.trim()
+                weaknessesList.add(Feature(name = name, value = value))
             }
 
-            if (meanPerformance == null) {
-                throw ResourceNotFoundException("No se encontró la fila de 'Total / Average' después de cargar la tabla para el equipo '$teamName'.")
+            // --- Extraer Estilo de Juego ---
+            val styleOfPlayContainer = driver.findElement(By.cssSelector("div.sws-content.character-card.singular div.style ul"))
+            val styleOfPlayElements = styleOfPlayContainer.findElements(By.cssSelector("li.character"))
+            for (element in styleOfPlayElements) {
+                // Para el estilo de juego, solo hay un nombre, no un "valor" Strong/Weak, así que el 'value' es nulo.
+                val name = element.text.trim()
+                styleOfPlayList.add(Feature(name = name))
             }
 
-            return TeamPerformance(
-                teamName = teamName,
-                tournamentPerformances = tournamentPerformances,
-                meanPerformance = meanPerformance!!
-            )
         } catch (e: Exception) {
-            // --- CAMBIO CLAVE AQUÍ: Imprimir el pageSource en caso de error ---
-            System.err.println("--- INICIO DEL DOM EN EL MOMENTO DEL ERROR ---")
-            System.err.println(driver.pageSource)
-            System.err.println("--- FIN DEL DOM EN EL MOMENTO DEL ERROR ---")
-            // -------------------------------------------------------------
-            throw ResourceNotFoundException("No se pudo cargar la información de rendimiento para el equipo '$teamName'. Error: ${e.message}")
-        } finally {
-            // Es una buena práctica cerrar el driver cuando terminamos con él
-            driver.quit() // Descomentar esto si quieres que el driver se cierre después de cada llamada.
-            // Si lo reutilizas para múltiples llamadas, no lo cierres aquí.
+            throw ResourceNotFoundException("No se pudieron cargar las características para el equipo '$teamName'. Error: ${e.message}")
         }
+
+        return TeamFeatures(
+            teamName = teamName,
+            strengths = strengthsList,
+            weaknesses = weaknessesList,
+            styleOfPlay = styleOfPlayList
+        )
     }
 }
